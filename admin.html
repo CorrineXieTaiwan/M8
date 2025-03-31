@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M8 護理排班系統 - 系統設定</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        * {
+            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .nav-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        .nav-button.active {
+            background-color: #42a5f5;
+            color: white;
+        }
+        .settings-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .settings-title {
+            font-size: 1.5em;
+            color: #2196f3;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #2196f3;
+            padding-bottom: 10px;
+        }
+        .nurse-management {
+            margin-bottom: 30px;
+        }
+        .nurse-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .nurse-input-group input {
+            flex: 1;
+            max-width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .nurse-input-group button {
+            padding: 8px 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .nurse-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .nurse-tag {
+            padding: 8px 12px;
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nurse-tag button {
+            border: none;
+            background: none;
+            color: #f44336;
+            cursor: pointer;
+            padding: 0;
+            font-size: 16px;
+        }
+        .save-button {
+            padding: 12px 24px;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .save-button:hover {
+            background-color: #F57C00;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transform: translateX(200%);
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        /* 床位管理樣式 */
+        .bed-grid-container {
+            margin: 20px 0;
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .bed-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .bed-config-item {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .bed-config-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .bed-config-item label {
+            font-size: 0.9em;
+            color: #2196f3;
+            margin-bottom: 8px;
+            font-weight: bold;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 6px;
+            text-align: center;
+        }
+        
+        .bed-config-item input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: calc(100% - 16px);
+            font-size: 0.9em;
+            text-align: center;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .bed-config-item input:focus {
+            border-color: #42a5f5;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
+        }
+        
+        .bed-reset-all {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #f5f5f5;
+            color: #f44336;
+            border: 1px solid #f44336;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .bed-reset-all:hover {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .bed-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .bed-management-title {
+            font-size: 1.2em;
+            color: #333;
+        }
+        
+        /* 標題容器樣式 */
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .head-nurse {
+            font-size: 1.5rem;
+            color: #2196f3;
+            font-weight: 500;
+            white-space: nowrap;
+            border-left: 2px solid #90caf9;
+            padding-left: 30px;
+        }
+        /* 日期時間顯示樣式 */
+        .datetime-display {
+            margin-left: auto;
+            text-align: right;
+            color: #333;
+        }
+        .datetime-line {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+        }
+        #currentDate {
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+        #currentTime {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        /* 移除之前添加的浮动按钮样式 */
+        .floating-save-button {
+            display: none; /* 或者完全移除这段CSS */
+        }
+        
+        /* 恢复原有的保存按钮样式 */
+        .save-button.bed-save {
+            display: inline-block;
+        }
+        
+        /* 确保原有的保存按钮样式正常显示 */
+        .save-button {
+            padding: 12px 24px;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title-container">
+            <h1>M8 護理排班系統</h1>
+            <span class="head-nurse">病房護理長：鐘黛瑩</span>
+            <div class="datetime-display">
+                <div class="datetime-line">
+                    <span id="currentDate"></span>
+                    <span id="currentTime"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-container">
+        <div class="settings-title">護理人員管理</div>
+        
+        <div class="nurse-management">
+            <div class="nurse-input-group">
+                <input type="text" id="nurseInput" placeholder="輸入護理師姓名">
+                <button onclick="addNurse()">新增護理師</button>
+            </div>
+            
+            <div class="nurse-list" id="nurseList">
+                <!-- 護理師標籤將在這裡動態生成 -->
+            </div>
+            
+            <button class="save-button" onclick="saveNurses()">保存設定</button>
+        </div>
+        
+        <!-- 新增床位管理部分 -->
+        <div class="settings-title">床位名稱管理</div>
+        
+        <div class="bed-management">
+            <div class="bed-management-header">
+                <span class="bed-management-title">自定義床位顯示名稱</span>
+                <button class="bed-reset-all" onclick="resetAllBeds()">重置所有床位名稱</button>
+            </div>
+            
+            <div class="bed-grid-container">
+                <div class="bed-grid" id="bedConfigGrid">
+                    <!-- 床位設定將在這裡動態生成 -->
+                </div>
+            </div>
+            
+            <!-- 修改保存床位设定按钮位置，放回床位管理框内的右下角 -->
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="save-button" onclick="saveBedConfig()">保存床位設定</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/shared-navigation.js"></script>
+
+    <script>
+        // 從 localStorage 獲取護理師列表
+        let nurses = new Set();
+        
+        // 初始化時載入護理師列表
+        function loadNurses() {
+            const savedNurses = localStorage.getItem('nurseList');
+            if (savedNurses) {
+                nurses = new Set(JSON.parse(savedNurses));
+            } else {
+                // 預設護理師名單
+                const defaultNurses = [
+                    "謝靜伊",
+                    "王小明",
+                    "周杰倫",
+                    "高小美",
+                    "蔡阿嘎"
+                ];
+                nurses = new Set(defaultNurses);
+            }
+            updateNurseList();
+        }
+        
+        // 新增護理師
+        function addNurse() {
+            const input = document.getElementById('nurseInput');
+            const name = input.value.trim();
+            
+            if (name && !nurses.has(name)) {
+                nurses.add(name);
+                updateNurseList();
+                input.value = '';
+                input.focus();
+            } else if (nurses.has(name)) {
+                showNotification('此護理師已存在於名單中');
+            }
+        }
+        
+        // 刪除護理師
+        function removeNurse(name) {
+            nurses.delete(name);
+            updateNurseList();
+        }
+        
+        // 更新護理師列表顯示
+        function updateNurseList() {
+            const nurseList = document.getElementById('nurseList');
+            nurseList.innerHTML = '';
+            
+            Array.from(nurses).sort().forEach(name => {
+                const nurseTag = document.createElement('div');
+                nurseTag.className = 'nurse-tag';
+                nurseTag.innerHTML = `
+                    <span>${name}</span>
+                    <button onclick="removeNurse('${name}')">&times;</button>
+                `;
+                nurseList.appendChild(nurseTag);
+            });
+        }
+        
+        // 保存護理師列表到 localStorage
+        function saveNurses() {
+            localStorage.setItem('nurseList', JSON.stringify(Array.from(nurses)));
+            showNotification('護理師名單已保存！');
+        }
+        
+        // 顯示通知
+        function showNotification(message) {
+            // 創建通知元素
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // 顯示通知
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // 3秒後隱藏通知
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // 添加按 Enter 鍵提交功能
+        document.getElementById('nurseInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addNurse();
+            }
+        });
+        
+        // 床位管理功能
+        const totalBeds = 36; // 總床位數量
+        
+        // 初始化床位配置
+        function initializeBedConfig() {
+            const bedConfigGrid = document.getElementById('bedConfigGrid');
+            bedConfigGrid.innerHTML = '';
+            
+            // 獲取保存的床位配置
+            let bedConfig = JSON.parse(localStorage.getItem('bedConfig')) || {};
+            
+            // 生成床位配置項
+            for (let i = 0; i < totalBeds; i++) {
+                const bedId = `bed_${i}`;
+                const defaultName = (i + 1).toString();
+                const currentName = bedConfig[bedId] || defaultName;
+                
+                const configItem = document.createElement('div');
+                configItem.className = 'bed-config-item';
+                
+                const label = document.createElement('label');
+                label.textContent = `床位 ${i + 1}`;
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = currentName;
+                input.placeholder = `輸入床位${i + 1}名稱`;
+                input.dataset.bedId = bedId;
+                input.dataset.defaultName = defaultName;
+                
+                configItem.appendChild(label);
+                configItem.appendChild(input);
+                
+                bedConfigGrid.appendChild(configItem);
+            }
+        }
+        
+        // 保存床位配置
+        function saveBedConfig() {
+            const inputs = document.querySelectorAll('.bed-config-item input');
+            let bedConfig = {};
+            
+            inputs.forEach(input => {
+                const bedId = input.dataset.bedId;
+                const value = input.value.trim();
+                
+                // 如果輸入為空，使用默認名稱
+                if (!value) {
+                    input.value = input.dataset.defaultName;
+                    bedConfig[bedId] = input.dataset.defaultName;
+                } else {
+                    bedConfig[bedId] = value;
+                }
+            });
+            
+            localStorage.setItem('bedConfig', JSON.stringify(bedConfig));
+            showNotification('床位設定已保存！');
+        }
+        
+        // 重置所有床位名稱
+        function resetAllBeds() {
+            if (confirm('確定要重置所有床位名稱嗎？')) {
+                const inputs = document.querySelectorAll('.bed-config-item input');
+                inputs.forEach(input => {
+                    input.value = input.dataset.defaultName;
+                });
+            }
+        }
+        
+        // 更新日期和時間
+        function updateDateTime() {
+            const now = new Date();
+            
+            // 格式化日期：年/月/日 星期幾
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const dateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} 星期${days[now.getDay()]}`;
+            
+            // 格式化時間：時:分
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            document.getElementById('currentDate').textContent = dateStr;
+            document.getElementById('currentTime').textContent = timeStr;
+        }
+        
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 設置當前頁面標識
+            localStorage.setItem('currentPage', 'admin.html');
+            
+            // 更新標題
+            document.querySelector('.title-container h1').textContent = 'M8 系統管理設定';
+            
+            loadNurses();
+            initializeBedConfig();
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+        });
+
+        // 頁面切換函數
+        function navigateTo(page) {
+            localStorage.setItem('currentPage', page);
+            window.location.href = page;
+        }
+    </script>
+</body>
+</html> 

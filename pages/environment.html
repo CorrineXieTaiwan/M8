@@ -1,0 +1,135 @@
+<!-- pages/environment.html -->
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M8 病房環境介紹</title>
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .environment-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .environment-header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .map-container {
+            width: 100%;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .map-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .environment-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .info-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .info-card h3 {
+            color: #3498db;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .info-card p {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .map-description {
+            margin: 20px auto;
+            max-width: 800px;
+            text-align: left;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .environment-header h1 {
+                font-size: 2em;
+            }
+            
+            .info-card {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="environment-header">
+            <h1>Ｍ８病房環境介紹</h1>
+            <p>歡迎了解我們的醫療環境與設施配置</p>
+        </div>
+
+        <div class="map-container">
+            <img src="../images/map.jpg" alt="醫院平面圖" class="map-image">
+            <div class="map-description">
+                <h3>醫院平面配置說明</h3>
+                <p>
+                    本院區規劃完善，設施齊全，提供病患及家屬最優質的醫療環境。
+                    平面圖中標示了主要的醫療區域、病房分布、以及重要設施位置，
+                    方便您快速找到所需的服務區域。
+                </p>
+            </div>
+        </div>
+
+        <div class="environment-info">
+            <div class="info-card">
+                <h3>病房環境</h3>
+                <p>
+                    - 一般病房：提供舒適的住院環境
+                    - 特殊照護病房：配備先進醫療設備
+                    - 護理站：24小時專業護理人員駐守
+                    - 探病時間：依各區域規定開放訪客
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>醫療設施</h3>
+                <p>
+                    - 檢查室：各類醫療檢查設備
+                    - 治療室：專業治療空間
+                    - 藥局：提供完整的藥品服務
+                    - 醫療器材室：配備緊急醫療設備
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>公共設施</h3>
+                <p>
+                    - 候診區：舒適的等候空間
+                    - 諮詢台：提供醫療諮詢服務
+                    - 休息區：供病患及家屬使用
+                    - 無障礙設施：方便行動不便者使用
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M8 護理排班系統</title>
+    <style>
+        body {
+            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-bottom: 150px;
+            transition: padding-bottom 0.3s ease;
+        }
+        * {
+            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+        }
+        button,
+        select,
+        input,
+        option {
+            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .nav-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+        }
+        .nav-button.active {
+            background-color: #42a5f5;
+            color: white;
+        }
+        .shift-groups {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .shift-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-left: 4px solid #2196f3;
+            background-color: #f8f9fa;
+            min-height: auto;
+            overflow-x: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        .shift-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .shift-title {
+            font-weight: bold;
+            margin-right: 15px;
+            color: #2196f3;
+            width: 80px;
+        }
+        .shift-column-headers {
+            display: grid;
+            grid-template-columns: 150px 100px 120px 1fr 200px 200px 40px;
+            gap: 10px;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f0f0f0;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .column-header {
+            text-align: center;
+            color: #2196f3;
+            font-size: 0.9em;
+        }
+        .care-group {
+            display: grid;
+            grid-template-columns: 150px 100px 120px 1fr 200px 200px 40px;
+            gap: 10px;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            background-color: white;
+            align-items: center;
+            justify-items: center;
+            margin-bottom: 5px;
+            height: 80px;
+            overflow: visible;
+        }
+        .care-group.selected {
+            background-color: #e3f2fd;
+        }
+        .bed-overview {
+            position: fixed;
+            bottom: -300px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 15px 20px;
+            border-top: 1px solid #ddd;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            transition: bottom 0.3s ease;
+            width: 90%;
+            max-width: 1200px;
+            height: 190px;
+        }
+        .bed-overview.show {
+            bottom: 100px;
+        }
+        .bed-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 6px;
+            margin-top: 8px;
+            overflow-y: auto;
+            max-height: 140px;
+        }
+        .bed-button {
+            padding: 10px 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            min-width: 45px;
+            max-width: 100%;
+            height: 42px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+        .bed-button.selected {
+            background-color: #42a5f5;
+            color: white;
+        }
+        .bed-button.assigned-care {
+            background-color: rgba(66, 165, 245, 0.2);
+            border-color: #42a5f5;
+        }
+        .bed-button.assigned-discharge {
+            background-color: rgba(255, 82, 82, 0.2);
+            border-color: #ff5252;
+        }
+        .bed-button.assigned-admission {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+        }
+        .add-group-button {
+            display: none;
+        }
+        .nurse-select,
+        select,
+        input {
+            height: 32px;
+            min-height: 32px;
+            max-height: 32px;
+            margin: 0 auto;
+            display: block;
+            width: 90%;
+            text-align-last: center;
+            text-align: center;
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .bed-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            min-height: 32px;
+            max-height: 150px;
+            padding: 4px;
+            border: 1px dashed #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 90%;
+            overflow-y: auto;
+            align-content: flex-start;
+            position: relative;
+            z-index: 1;
+            margin: 0 auto;
+        }
+        .bed-display.active {
+            border-color: #42a5f5;
+            background-color: rgba(66, 165, 245, 0.1);
+        }
+        .bed-display.discharge.active {
+            border-color: #ff5252;
+            background-color: rgba(255, 82, 82, 0.1);
+        }
+        .bed-display.admission.active {
+            border-color: #4caf50;
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+        .bed-tag {
+            background-color: #42a5f3;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            display: inline-flex;
+            margin: 1px 2px;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            max-width: 60px;
+            height: 20px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .bed-tag.discharge {
+            background-color: #ff5252;
+        }
+        .bed-tag.admission {
+            background-color: #4caf50;
+        }
+        .bed-field {
+            cursor: pointer;
+            width: 100%;
+            position: relative;
+            height: 100%;
+        }
+        .bed-field-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 1px;
+            white-space: nowrap;
+        }
+        .nurse-management {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .nurse-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .nurse-input-group input {
+            flex: 1;
+            max-width: 200px;
+        }
+        .nurse-input-group button {
+            padding: 4px 12px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .nurse-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .nurse-tag {
+            padding: 4px 8px;
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nurse-tag button {
+            border: none;
+            background: none;
+            color: #f44336;
+            cursor: pointer;
+            padding: 0;
+            font-size: 16px;
+        }
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            width: 300px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .modal-close {
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+        .add-nurse-button {
+            padding: 12px 24px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .action-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .floating-add-button {
+            padding: 12px 24px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-bed-overview {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 101;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .bed-overview.show + .toggle-bed-overview {
+            bottom: 330px;
+        }
+        @keyframes flash-red {
+            0%, 100% { 
+                background-color: white;
+                border-color: #ddd;
+            }
+            50% { 
+                background-color: #ffebee;
+                border-color: #f44336;
+            }
+        }
+        .bed-button.duplicate {
+            animation: flash-red 0.5s ease 2;
+            border-color: #f44336;
+        }
+        .bed-tag:hover {
+            opacity: 0.8;
+        }
+        body.overview-hidden {
+            padding-bottom: 150px;
+        }
+        h1, h2, h3 {
+            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+        }
+        .remove-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .remove-button:hover {
+            background-color: #d32f2f;
+        }
+        .action-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transform: translateX(200%);
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .floating-save-button {
+            padding: 12px 24px;
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 10px;
+        }
+        /* 床位概覽標題區域 */
+        .bed-overview-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .bed-overview h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #2196f3;
+            font-weight: 600;
+            text-align: center;
+        }
+        /* 重置床位按鈕 */
+        .reset-beds-button {
+            padding: 8px 16px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+            font-weight: 500;
+        }
+        .reset-beds-button:hover {
+            background-color: #d32f2f;
+        }
+        /* 標題容器樣式 */
+        .title-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        .head-nurse {
+            font-size: 1.5rem;
+            color: #2196f3;
+            font-weight: 500;
+            white-space: nowrap;
+            border-left: 2px solid #90caf9;
+            padding-left: 30px;
+        }
+        /* 日期時間顯示樣式 */
+        .datetime-display {
+            margin-left: auto;
+            text-align: right;
+            color: #333;
+        }
+        .datetime-line {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+        }
+        #currentDate {
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+        #currentTime {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title-container">
+            <h1>M8 護理排班系統</h1>
+            <span class="head-nurse">病房護理長：鐘黛瑩</span>
+            <div class="datetime-display">
+                <div class="datetime-line">
+                    <span id="currentDate"></span>
+                    <span id="currentTime"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal" id="nurseModal">
+        <div class="modal-header">
+            <h3>新增護理師</h3>
+            <button class="modal-close" onclick="hideModal()">&times;</button>
+        </div>
+        <div class="modal-content">
+            <input type="text" id="nurseInput" placeholder="輸入護理師姓名" style="width: 100%; margin-bottom: 15px;">
+            <button onclick="addNurseAndClose()" style="width: 100%; padding: 8px; background-color: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                新增
+            </button>
+        </div>
+    </div>
+
+    <div class="shift-groups" id="shiftGroups">
+        <!-- 白班 -->
+        <div class="shift-section">
+            <div class="shift-header">
+                <span class="shift-title">白班</span>
+                <button class="add-group-button" onclick="addCareGroup('白班')">新增照護組別</button>
+            </div>
+            <div class="shift-column-headers">
+                <div class="column-header">護理師</div>
+                <div class="column-header">點班</div>
+                <div class="column-header">消防編組</div>
+                <div class="column-header">照護床位</div>
+                <div class="column-header">出院床位</div>
+                <div class="column-header">入院床位</div>
+                <div class="column-header"></div>
+            </div>
+            <div id="白班-groups"></div>
+        </div>
+
+        <!-- 小夜班 -->
+        <div class="shift-section">
+            <div class="shift-header">
+                <span class="shift-title">小夜班</span>
+                <button class="add-group-button" onclick="addCareGroup('小夜班')">新增照護組別</button>
+            </div>
+            <div class="shift-column-headers">
+                <div class="column-header">護理師</div>
+                <div class="column-header">點班</div>
+                <div class="column-header">消防編組</div>
+                <div class="column-header">照護床位</div>
+                <div class="column-header">出院床位</div>
+                <div class="column-header">入院床位</div>
+                <div class="column-header"></div>
+            </div>
+            <div id="小夜班-groups"></div>
+        </div>
+
+        <!-- 大夜班 -->
+        <div class="shift-section">
+            <div class="shift-header">
+                <span class="shift-title">大夜班</span>
+                <button class="add-group-button" onclick="addCareGroup('大夜班')">新增照護組別</button>
+            </div>
+            <div class="shift-column-headers">
+                <div class="column-header">護理師</div>
+                <div class="column-header">點班</div>
+                <div class="column-header">消防編組</div>
+                <div class="column-header">照護床位</div>
+                <div class="column-header">出院床位</div>
+                <div class="column-header">入院床位</div>
+                <div class="column-header"></div>
+            </div>
+            <div id="大夜班-groups"></div>
+        </div>
+    </div>
+
+    <div class="bed-overview">
+        <div class="bed-overview-header">
+            <h3>床位概覽</h3>
+            <button class="reset-beds-button" onclick="resetAllBeds()">重置所有床位</button>
+        </div>
+        <div class="bed-grid">
+            <!-- 床位按鈕會由 JavaScript 動態生成 -->
+        </div>
+    </div>
+
+    <!-- 新增浮動按鈕組 -->
+    <div class="action-buttons">
+        <button class="floating-add-button" id="addGroupButton">新增照護組別</button>
+        <button class="add-nurse-button" onclick="showModal()">新增護理師</button>
+        <button class="floating-save-button" onclick="saveScheduleData()">保存排班</button>
+    </div>
+
+    <button class="toggle-bed-overview" id="toggleBedOverview">
+        顯示床位概覽
+    </button>
+
+    <div class="notification"></div>
+
+    <script src="js/shared-navigation.js"></script>
+
+    <script>
+        // 从 localStorage 获取护理师列表
+        let nurses = new Set();
+        let assignedNurses = new Set();
+
+        // 初始化护理师列表
+        function initializeNurses() {
+            const savedNurses = localStorage.getItem('nurseList');
+            if (savedNurses) {
+                nurses = new Set(JSON.parse(savedNurses));
+            } else {
+                // 预设护理师名单（仅在没有保存的名单时使用）
+                const defaultNurses = [
+                    "謝靜伊",
+                    "王小明",
+                    "周杰倫",
+                    "高小美",
+                    "蔡阿嘎"
+                ];
+                nurses = new Set(defaultNurses);
+            }
+            updateAllNurseSelects();
+        }
+
+        // 修改新增護理師的彈窗標題和提示
+        document.querySelector('#nurseModal h3').textContent = '新增護理師';
+        document.querySelector('#nurseInput').placeholder = '輸入護理師姓名';
+
+        // 修改新增護理師按鈕的文字
+        document.querySelector('.add-nurse-button').textContent = '新增護理師';
+
+        function showModal() {
+            document.getElementById('modalBackdrop').style.display = 'block';
+            document.getElementById('nurseModal').style.display = 'block';
+            document.getElementById('nurseInput').focus();
+        }
+
+        function hideModal() {
+            document.getElementById('modalBackdrop').style.display = 'none';
+            document.getElementById('nurseModal').style.display = 'none';
+            document.getElementById('nurseInput').value = '';
+        }
+
+        function addNurseAndClose() {
+            const input = document.getElementById('nurseInput');
+            const name = input.value.trim();
+            
+            if (name && !nurses.has(name)) {
+                nurses.add(name);
+                updateAllNurseSelects();
+                hideModal();
+            } else if (nurses.has(name)) {
+                alert('此護理師已存在於名單中');
+            }
+        }
+
+        // 添加按 Enter 鍵提交功能
+        document.getElementById('nurseInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addNurseAndClose();
+            }
+        });
+
+        // 點擊背景關閉彈窗
+        document.getElementById('modalBackdrop').onclick = hideModal;
+
+        // 防止點擊彈窗內容時關閉彈窗
+        document.getElementById('nurseModal').onclick = function(e) {
+            e.stopPropagation();
+        };
+
+        // 修改床位总数为36
+        const totalBeds = 36; // 将原来的床位数量修改为36
+        
+        // 初始化床位数据
+        function initializeBeds() {
+            // 初始化床位按鈕
+            const bedGrid = document.querySelector('.bed-grid');
+            bedGrid.innerHTML = ''; // 清空现有床位
+            
+            // 获取床位配置
+            let bedConfig = JSON.parse(localStorage.getItem('bedConfig')) || {};
+            console.log('读取到的床位配置:', bedConfig); // 调试信息
+            
+            // 生成床位按鈕
+            for (let i = 0; i < totalBeds; i++) {
+                const button = document.createElement('button');
+                const bedId = `bed_${i}`;
+                // 使用自定义名称或默认名称
+                const displayName = bedConfig[bedId] || (i + 1).toString();
+                console.log(`床位${i+1}显示为:`, displayName); // 调试信息
+                button.textContent = displayName;
+                button.dataset.index = i; // 存储原始索引
+                button.className = 'bed-button';
+                button.onclick = updateSelectedBeds;  // 直接綁定更新函數
+                bedGrid.appendChild(button);
+            }
+        }
+        
+        // 修改床位點擊處理
+        let selectedGroup = null;
+        let activeField = null; // 當前活動的欄位（照護/出院/入院）
+
+        // 修改床位顯示區域的點擊處理
+        function handleBedDisplayClick(displayDiv, type) {
+            document.querySelectorAll('.bed-display').forEach(d => d.classList.remove('active'));
+            displayDiv.classList.add('active');
+            activeField = {
+                element: displayDiv,
+                type: type
+            };
+            
+            // 確保床位概覽顯示
+            if (!isOverviewVisible) {
+                toggleButton.click();
+            }
+            
+            // 更新當前班別的床位狀態
+            if (selectedGroup) {
+                updateBedButtonsStatus(selectedGroup.closest('.shift-section'));
+            }
+        }
+
+        // 修改新增護理師函數
+        function addCareGroup(shift) {
+            // 確保所有班別使用相同的邏輯
+            const shiftContainer = document.getElementById(`${shift}-groups`);
+            if (!shiftContainer) {
+                console.error('找不到班別容器:', shift);
+                return;
+            }
+
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'care-group';
+            
+            // 修改護理師選擇下拉選單
+            const nurseSelect = document.createElement('select');
+            nurseSelect.className = 'nurse-select';
+            nurseSelect.innerHTML = `
+                <option value="">選擇護理師</option>
+                ${Array.from(nurses)
+                    .filter(nurse => !assignedNurses.has(nurse))
+                    .map(nurse => `<option value="${nurse}">${nurse}</option>`)
+                    .join('')}
+            `;
+
+            // 添加選擇事件
+            nurseSelect.onchange = function() {
+                const previousValue = this.dataset.previousValue;
+                if (previousValue) {
+                    assignedNurses.delete(previousValue);
+                }
+                if (this.value) {
+                    assignedNurses.add(this.value);
+                }
+                this.dataset.previousValue = this.value;
+                updateAllNurseSelects();
+            };
+
+            // 修改等級選擇下拉選單
+            const levelSelect = document.createElement('select');
+            levelSelect.innerHTML = `
+                <option value="">選擇點班</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            `;
+
+            // 修改消防編組下拉選單
+            const fireTeamSelect = document.createElement('select');
+            fireTeamSelect.className = 'fire-team-select';
+            fireTeamSelect.innerHTML = `
+                <option value="">選擇組別</option>
+                <option value="通報班">通報班</option>
+                <option value="滅火班">滅火班</option>
+                <option value="救護班">救護班</option>
+                <option value="避難引導班">避難引導班</option>
+                <option value="安全防護班">安全防護班</option>
+            `;
+
+            // 修改班別選擇下拉選單
+            const shiftTypeSelect = document.createElement('select');
+            shiftTypeSelect.innerHTML = `
+                <option value="">選擇編組</option>
+                <option value="正常">正常</option>
+                <option value="小夜">小夜</option>
+                <option value="大夜">大夜</option>
+                <option value="休假">休假</option>
+            `;
+
+            // 創建三個床位顯示區域，但不再添加標題
+            const createBedField = (type) => {
+                const displayDiv = document.createElement('div');
+                displayDiv.className = `bed-display ${type}`;
+                
+                // 確保點擊整個區域都能觸發選擇
+                displayDiv.onclick = (e) => {
+                    e.stopPropagation();
+                    handleBedDisplayClick(displayDiv, type);
+                };
+                
+                // 確保點擊床位標籤不會取消選擇狀態
+                displayDiv.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('bed-tag')) {
+                        e.stopPropagation();
+                        // 如果點擊的是床位標籤，仍然保持當前區域為活動狀態
+                        handleBedDisplayClick(displayDiv, type);
+                    }
+                });
+                
+                return displayDiv;
+            };
+
+            const careBedsField = createBedField('care');
+            const dischargeBedsField = createBedField('discharge');
+            const admissionBedsField = createBedField('admission');
+
+            // 組別選中處理
+            groupDiv.onclick = function() {
+                handleGroupClick(this);
+            };
+
+            // 刪除按鈕
+            const removeButton = document.createElement('button');
+            removeButton.textContent = '×';
+            removeButton.className = 'remove-button';
+            removeButton.onclick = function(e) {
+                e.stopPropagation();
+                const nurseValue = nurseSelect.value;
+                if (nurseValue) {
+                    assignedNurses.delete(nurseValue);
+                }
+                groupDiv.remove();
+                updateAllNurseSelects();
+            };
+
+            // 使用網格布局添加元素，按照护理师、点班、消防编组的顺序
+            groupDiv.appendChild(nurseSelect);
+            groupDiv.appendChild(levelSelect);
+            groupDiv.appendChild(fireTeamSelect);
+            groupDiv.appendChild(careBedsField);
+            groupDiv.appendChild(dischargeBedsField);
+            groupDiv.appendChild(admissionBedsField);
+            groupDiv.appendChild(removeButton);
+
+            shiftContainer.appendChild(groupDiv);
+            
+            // 新增組別後立即更新該班別的床位狀態
+            updateBedButtonsStatus(shiftContainer.closest('.shift-section'));
+        }
+
+        // 修改消防編組下拉選單選項
+        function createFireTeamSelect() {
+            const select = document.createElement('select');
+            
+            // 修改空選項文字
+            const emptyOption = document.createElement('option');
+            emptyOption.value = '';
+            emptyOption.textContent = '選擇組別';
+            select.appendChild(emptyOption);
+            
+            // 添加五個消防編組選項，按照指定順序
+            const fireTeams = ['通報班', '滅火班', '救護班', '避難引導班', '安全防護班'];
+            
+            fireTeams.forEach(team => {
+                const option = document.createElement('option');
+                option.value = team;
+                option.textContent = team;
+                select.appendChild(option);
+            });
+            
+            return select;
+        }
+
+        // 修改更新床位按鈕狀態的函數
+        function updateBedButtonsStatus(currentShiftSection) {
+            // 先清除所有床位按鈕的狀態
+            document.querySelectorAll('.bed-button').forEach(button => {
+                // 重置按鈕狀態
+                button.className = 'bed-button';
+            });
+
+            // 只檢查當前班別內的床位分配
+            if (currentShiftSection) {
+                const currentShiftGroups = currentShiftSection.querySelectorAll('.care-group');
+                currentShiftGroups.forEach(group => {
+                    ['care', 'discharge', 'admission'].forEach(type => {
+                        const display = group.querySelector(`.bed-display.${type}`);
+                        if (display) {
+                            const bedTags = display.querySelectorAll('.bed-tag');
+                            bedTags.forEach(tag => {
+                                const button = Array.from(document.querySelectorAll('.bed-button'))
+                                    .find(btn => btn.textContent === tag.textContent);
+                                if (button) {
+                                    button.classList.add(`assigned-${type}`);
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+        }
+
+        // 修改點擊組別的處理
+        function handleGroupClick(groupDiv) {
+            // 移除其他組別的選中狀態
+            document.querySelectorAll('.care-group').forEach(g => g.classList.remove('selected'));
+            groupDiv.classList.add('selected');
+            selectedGroup = groupDiv;
+            
+            // 更新當前班別的床位狀態
+            const currentShiftSection = groupDiv.closest('.shift-section');
+            updateBedButtonsStatus(currentShiftSection);
+            
+            // 保持當前選中的欄位狀態
+            if (activeField) {
+                document.querySelectorAll('.bed-display').forEach(d => d.classList.remove('active'));
+                activeField.element.classList.add('active');
+            }
+        }
+
+        // 修改點擊其他地方的處理
+        document.addEventListener('click', function(e) {
+            // 只有當點擊的不是床位按鈕、床位顯示區域或其相關元素時才取消選中
+            if (!e.target.closest('.bed-display') && 
+                !e.target.closest('.bed-button') && 
+                !e.target.closest('.bed-tag')) {
+                document.querySelectorAll('.bed-display').forEach(d => d.classList.remove('active'));
+                activeField = null;
+            }
+        });
+
+        function updateAllNurseSelects() {
+            document.querySelectorAll('.nurse-select').forEach(select => {
+                const currentValue = select.value;
+                
+                // 將所有護理師放在同一個列表中
+                const allNurses = Array.from(nurses)
+                    .filter(nurse => !assignedNurses.has(nurse) || nurse === currentValue)
+                    .map(nurse => `<option value="${nurse}" ${nurse === currentValue ? 'selected' : ''}>${nurse}</option>`)
+                    .join('');
+
+                select.innerHTML = `
+                    <option value="">選擇護理師</option>
+                    ${allNurses}
+                `;
+            });
+        }
+
+        // 初始化時更新所有護理師選擇下拉選單
+        updateAllNurseSelects();
+
+        // 追踪當前選中的班別區域
+        let currentShift = null;
+
+        // 為每個班別區域添加點擊事件
+        document.querySelectorAll('.shift-section').forEach(section => {
+            section.addEventListener('click', function() {
+                document.querySelectorAll('.shift-section').forEach(s => 
+                    s.style.borderColor = '#2196f3');
+                this.style.borderColor = '#4caf50';
+                currentShift = this.querySelector('.shift-title').textContent;
+            });
+        });
+
+        // 修改新增組別按鈕的處理
+        document.getElementById('addGroupButton').onclick = function() {
+            if (!currentShift) {
+                alert('請先選擇要新增組別的班別');
+                return;
+            }
+            addCareGroup(currentShift);
+        };
+
+        // 添加床位概覽的切換功能
+        const bedOverview = document.querySelector('.bed-overview');
+        const toggleButton = document.getElementById('toggleBedOverview');
+        let isOverviewVisible = false;
+
+        toggleButton.onclick = function() {
+            isOverviewVisible = !isOverviewVisible;
+            bedOverview.classList.toggle('show');
+            document.body.classList.toggle('overview-hidden');
+            this.textContent = isOverviewVisible ? '隱藏床位概覽' : '顯示床位概覽';
+            
+            if (isOverviewVisible) {
+                document.body.style.paddingBottom = '400px';
+            } else {
+                document.body.style.paddingBottom = '150px';
+            }
+        };
+
+        // 修改床位概覽的樣式
+        const bedOverviewStyle = document.createElement('style');
+        bedOverviewStyle.textContent = `
+            .bed-overview.show {
+                position: fixed;
+                bottom: 100px;
+                max-height: 300px;
+                overflow: hidden;
+            }
+        `;
+        document.head.appendChild(bedOverviewStyle);
+
+        // 確保所有班別區域都正確初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 根據當前頁面設置標題
+            const currentPage = localStorage.getItem('currentPage') || 'index.html';
+            const titleElement = document.querySelector('.title-container h1');
+            
+            if (currentPage === 'index.html') {
+                titleElement.textContent = 'M8 護理排班系統';
+            } else if (currentPage === 'checklist.html') {
+                titleElement.textContent = 'M8 設備點班系統';
+            } else if (currentPage === 'admin.html') {
+                titleElement.textContent = 'M8 系統管理設定';
+            }
+            
+            // 其他初始化代碼...
+            
+            // 初始化所有班別的容器
+            ['白班', '小夜班', '大夜班'].forEach(shift => {
+                const container = document.getElementById(`${shift}-groups`);
+                if (container) {
+                    // 為每個班別容器添加點擊事件委託
+                    container.addEventListener('click', function(e) {
+                        const groupDiv = e.target.closest('.care-group');
+                        if (groupDiv) {
+                            document.querySelectorAll('.care-group').forEach(g => 
+                                g.classList.remove('selected'));
+                            groupDiv.classList.add('selected');
+                            selectedGroup = groupDiv;
+                            updateBedButtonsStatus(this.closest('.shift-section'));
+                        }
+                    });
+                }
+            });
+            
+            // 初始化床位
+            console.log('开始初始化床位'); // 调试信息
+            initializeBeds();
+            
+            // 初始化护理师列表
+            initializeNurses();
+            
+            // 加载保存的排班数据
+            loadScheduleData();
+        });
+
+        // 初始化時設置 body 類別
+        document.body.classList.add('overview-hidden');
+
+        // 修改點擊床位按鈕的處理
+        function updateSelectedBeds() {
+            // 如果没有选中任何区域或组别，直接返回，不显示警告
+            if (!activeField || !selectedGroup) {
+                return;
+            }
+            
+            const bedNumber = this.textContent;
+            
+            // 只在当前班别内检查重复
+            const currentShiftGroups = selectedGroup.closest('.shift-section').querySelectorAll('.care-group');
+            let isDuplicate = false;
+            
+            // 只在当前班别的当前类型中检查重复
+            currentShiftGroups.forEach(group => {
+                const display = group.querySelector(`.bed-display.${activeField.type}`);
+                if (display) {
+                    const bedTags = display.querySelectorAll('.bed-tag');
+                    bedTags.forEach(tag => {
+                        if (tag.textContent === bedNumber) {
+                            isDuplicate = true;
+                        }
+                    });
+                }
+            });
+            
+            if (isDuplicate) {
+                this.classList.add('duplicate');
+                setTimeout(() => {
+                    this.classList.remove('duplicate');
+                }, 1000);
+                return;
+            }
+            
+            const bedTag = document.createElement('span');
+            bedTag.textContent = bedNumber;
+            bedTag.className = `bed-tag ${activeField.type}`;
+            
+            bedTag.onclick = function(e) {
+                e.stopPropagation();
+                this.remove();
+                // 只更新当前班别的床位状态
+                updateBedButtonsStatus(selectedGroup.closest('.shift-section'));
+            };
+            
+            activeField.element.appendChild(bedTag);
+            // 只更新当前班别的床位状态
+            updateBedButtonsStatus(selectedGroup.closest('.shift-section'));
+            activeField.element.classList.add('active');
+
+            // 保存床位配置到localStorage
+            function saveBedConfig() {
+                let bedConfig = {};
+                document.querySelectorAll('.bed-button').forEach(button => {
+                    const index = button.dataset.index;
+                    const displayName = button.textContent;
+                    bedConfig[`bed_${index}`] = displayName;
+                });
+                
+                localStorage.setItem('bedConfig', JSON.stringify(bedConfig));
+            }
+            
+            // 在床位名称更改后调用保存
+            saveBedConfig();
+        }
+
+        // 保存排班数据到localStorage
+        function saveScheduleData() {
+            const scheduleData = {
+                shifts: {}
+            };
+            
+            // 保存每个班别的数据
+            ['白班', '小夜班', '大夜班'].forEach(shift => {
+                const shiftGroups = [];
+                const groupElements = document.querySelectorAll(`#${shift}-groups .care-group`);
+                
+                groupElements.forEach(group => {
+                    const nurseSelect = group.querySelector('.nurse-select');
+                    const levelSelect = group.querySelector('select:nth-of-type(2)');
+                    const shiftTypeSelect = group.querySelector('select:nth-of-type(3)');
+                    
+                    // 获取床位数据
+                    const careBeds = Array.from(group.querySelector('.bed-display.care').querySelectorAll('.bed-tag'))
+                        .map(tag => tag.textContent);
+                    const dischargeBeds = Array.from(group.querySelector('.bed-display.discharge').querySelectorAll('.bed-tag'))
+                        .map(tag => tag.textContent);
+                    const admissionBeds = Array.from(group.querySelector('.bed-display.admission').querySelectorAll('.bed-tag'))
+                        .map(tag => tag.textContent);
+                    
+                    // 创建组别数据对象
+                    const groupData = {
+                        nurse: nurseSelect.value,
+                        level: levelSelect.value,
+                        shiftType: shiftTypeSelect.value,
+                        careBeds: careBeds,
+                        dischargeBeds: dischargeBeds,
+                        admissionBeds: admissionBeds
+                    };
+                    
+                    shiftGroups.push(groupData);
+                });
+                
+                scheduleData.shifts[shift] = shiftGroups;
+            });
+            
+            // 保存到localStorage
+            localStorage.setItem('scheduleData', JSON.stringify(scheduleData));
+            
+            // 顯示保存成功的通知
+            showNotification('排班設定已保存');
+        }
+        
+        // 从localStorage加载排班数据
+        function loadScheduleData() {
+            const savedData = localStorage.getItem('scheduleData');
+            if (!savedData) return;
+            
+            const scheduleData = JSON.parse(savedData);
+            
+            // 清空现有的组别
+            ['白班', '小夜班', '大夜班'].forEach(shift => {
+                const container = document.getElementById(`${shift}-groups`);
+                if (container) {
+                    container.innerHTML = '';
+                }
+            });
+            
+            // 恢复每个班别的数据
+            Object.keys(scheduleData.shifts).forEach(shift => {
+                const shiftGroups = scheduleData.shifts[shift];
+                
+                shiftGroups.forEach(groupData => {
+                    // 创建新的组别
+                    addCareGroup(shift);
+                    
+                    // 获取刚刚创建的组别元素
+                    const container = document.getElementById(`${shift}-groups`);
+                    const groupElement = container.lastElementChild;
+                    
+                    // 设置护理师、等级和班别
+                    const nurseSelect = groupElement.querySelector('.nurse-select');
+                    const levelSelect = groupElement.querySelector('select:nth-of-type(2)');
+                    const shiftTypeSelect = groupElement.querySelector('select:nth-of-type(3)');
+                    
+                    nurseSelect.value = groupData.nurse;
+                    levelSelect.value = groupData.level;
+                    shiftTypeSelect.value = groupData.shiftType;
+                    
+                    // 如果选择了护理师，更新已分配护理师集合
+                    if (groupData.nurse) {
+                        assignedNurses.add(groupData.nurse);
+                        nurseSelect.dataset.previousValue = groupData.nurse;
+                    }
+                    
+                    // 恢复床位数据
+                    const careDisplay = groupElement.querySelector('.bed-display.care');
+                    const dischargeDisplay = groupElement.querySelector('.bed-display.discharge');
+                    const admissionDisplay = groupElement.querySelector('.bed-display.admission');
+                    
+                    // 添加照护床位
+                    groupData.careBeds.forEach(bedNumber => {
+                        const bedTag = document.createElement('span');
+                        bedTag.textContent = bedNumber;
+                        bedTag.className = 'bed-tag care';
+                        
+                        bedTag.onclick = function(e) {
+                            e.stopPropagation();
+                            this.remove();
+                            updateBedButtonsStatus(groupElement.closest('.shift-section'));
+                        };
+                        
+                        careDisplay.appendChild(bedTag);
+                    });
+                    
+                    // 添加出院床位
+                    groupData.dischargeBeds.forEach(bedNumber => {
+                        const bedTag = document.createElement('span');
+                        bedTag.textContent = bedNumber;
+                        bedTag.className = 'bed-tag discharge';
+                        
+                        bedTag.onclick = function(e) {
+                            e.stopPropagation();
+                            this.remove();
+                            updateBedButtonsStatus(groupElement.closest('.shift-section'));
+                        };
+                        
+                        dischargeDisplay.appendChild(bedTag);
+                    });
+                    
+                    // 添加入院床位
+                    groupData.admissionBeds.forEach(bedNumber => {
+                        const bedTag = document.createElement('span');
+                        bedTag.textContent = bedNumber;
+                        bedTag.className = 'bed-tag admission';
+                        
+                        bedTag.onclick = function(e) {
+                            e.stopPropagation();
+                            this.remove();
+                            updateBedButtonsStatus(groupElement.closest('.shift-section'));
+                        };
+                        
+                        admissionDisplay.appendChild(bedTag);
+                    });
+                });
+            });
+            
+            // 更新所有护理师选择下拉菜单
+            updateAllNurseSelects();
+            
+            // 更新所有班别的床位状态
+            document.querySelectorAll('.shift-section').forEach(section => {
+                updateBedButtonsStatus(section);
+            });
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // 显示通知
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // 3秒后隐藏通知
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // 更新日期和時間
+        function updateDateTime() {
+            const now = new Date();
+            
+            // 格式化日期：年/月/日 星期幾
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const dateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} 星期${days[now.getDay()]}`;
+            
+            // 格式化時間：時:分（移除秒數）
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            document.getElementById('currentDate').textContent = dateStr;
+            document.getElementById('currentTime').textContent = timeStr;
+        }
+
+        // 頁面載入時初始化日期時間，並每秒更新一次
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化日期時間
+            updateDateTime();
+            
+            // 每秒更新一次
+            setInterval(updateDateTime, 1000);
+            
+            // 其他初始化代碼...
+        });
+
+        // 頁面切換函數
+        function navigateTo(page) {
+            // 保存當前頁面標識
+            localStorage.setItem('currentPage', page);
+            
+            // 跳轉到相應頁面
+            window.location.href = page;
+        }
+
+        // 修改重置所有床位的函數，移除保存排班動作
+
+        // 重置所有床位
+        function resetAllBeds() {
+            // 清除所有班別中的所有照護組別的床位分配
+            ['白班', '小夜班', '大夜班'].forEach(shift => {
+                const shiftContainer = document.getElementById(`${shift}-groups`);
+                if (shiftContainer) {
+                    const careGroups = shiftContainer.querySelectorAll('.care-group');
+                    careGroups.forEach(group => {
+                        ['care', 'discharge', 'admission'].forEach(type => {
+                            const display = group.querySelector(`.bed-display.${type}`);
+                            if (display) {
+                                display.innerHTML = '';
+                            }
+                        });
+                    });
+                }
+            });
+            
+            // 重置所有床位按鈕的狀態
+            document.querySelectorAll('.bed-button').forEach(button => {
+                button.className = 'bed-button';
+            });
+            
+            // 顯示通知
+            showNotification('所有班別的床位已重置');
+            
+            // 移除保存排班數據的動作
+        }
+    </script>
+</body>
+</html>
+

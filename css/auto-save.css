@@ -1,0 +1,30 @@
+/* 自动保存提示样式 */
+.auto-save-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  background-color: rgba(0, 128, 0, 0.8);
+  color: white;
+  border-radius: 4px;
+  z-index: 9999;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  animation: fadeInOut 2.5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 表单修改状态指示 */
+.form-modified {
+  border-left: 3px solid orange;
+}
+
+.form-saved {
+  border-left: 3px solid green;
+  transition: border-left-color 0.5s ease;
+} 

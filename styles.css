@@ -1,0 +1,510 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f8fa;
+    color: #2c3e50;
+  }
+  
+  h1, h2 {
+    text-align: center;
+  }
+  
+  #currentShiftDisplay {
+    display: none;
+  }
+  
+
+  .container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  
+  .top-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 20px;
+  }
+  
+  .manage-nurse-btn, .add-group-btn {
+    background-color: #3498db;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  
+  .manage-nurse-btn:hover, .add-group-btn:hover {
+    background-color: #ff9447;
+  }
+  
+  .date-display {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #3498db;
+  }
+  
+  .shift-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .shift-btn {
+    padding: 10px 30px;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 6px;
+    margin: 0 5px;
+    transition: all 0.2s;
+  }
+  
+  .shift-btn.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+  }
+  
+  .current-shift {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0 20px;
+    color: #3498db;
+  }
+  
+  .nurse-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .nurse-selection-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .nurse-label {
+    font-weight: bold;
+    width: 100px;
+  }
+  
+  input[type="radio"] {
+    margin-left: 10px;
+  }
+  
+  select.modern-select {
+    min-width: 160px;
+    max-width: 100%;
+    appearance: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    transition: border-color 0.2s;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23666" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+  }
+  
+  select.modern-select:focus {
+    outline: none;
+    border-color: #3498db;
+  }
+  
+  .bed-assignment {
+    margin-top: 30px;
+  }
+  
+  .bed-container {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .bed {
+    padding: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 18px;
+    background-color: #f8f8f8;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+  }
+  
+  .bed:hover {
+    background-color: #e0f0ff;
+  }
+  
+  .bed.duplicate {
+    background-color: #ff4d4f !important;
+    color: white !important;
+    animation: flash 0.5s ease-in-out 2;
+  }
+  
+  @keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .nurse-assignment-container {
+    margin-top: 30px;
+  }
+  
+  .nurse-assignment {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 5px solid #3498db;
+    padding: 12px 16px;
+  }
+  
+  .assignment-nurse-name {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .assignment-bed-blocks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  
+  .bed-block {
+    width: 48px; /* ✅ 固定寬度 */
+    height: 42px; /* ✅ 固定高度 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 12px; /* 可選：也可以移除 */
+    background-color: #3498db;
+    color: white;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    box-sizing: border-box;
+  }
+  
+  
+  .confirm-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 998;
+  }
+  
+  .confirm-overlay {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    min-width: 300px;
+    text-align: center;
+    animation: fadeInUp 0.3s ease-out;
+  }
+  
+  .confirm-overlay p {
+    margin: 0 0 15px;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .confirm-overlay .confirm-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  .confirm-overlay button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+  }
+  
+  .confirm-overlay button.confirm {
+    background-color: #007aff;
+    color: white;
+  }
+  
+  .confirm-overlay button.confirm:hover {
+    background-color: #005ecb;
+  }
+  
+  .confirm-overlay button.cancel {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  .confirm-overlay button.cancel:hover {
+    background-color: #c0c0c0;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translate(-50%, 40px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  }
+  
+  .nurse-input-backdrop {
+    position: fixed;
+    bottom: 60px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 998;
+  }
+  
+  .nurse-input-overlay {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    padding: 28px 32px;
+    border-radius: 16px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+    z-index: 999;
+    text-align: center;
+    width: max-content;
+    min-width: 320px;
+  }
+  
+  .nurse-input-overlay input {
+    padding: 10px 16px;
+    font-size: 16px;
+    width: 260px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    margin-bottom: 20px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .nurse-input-overlay input:focus {
+    border-color: #007aff;
+    box-shadow: 0 0 0 2px rgba(0,122,255,0.2);
+  }
+  
+  .nurse-input-overlay .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+  }
+  
+  .nurse-input-overlay button {
+    padding: 10px 18px;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  
+  .nurse-input-overlay button.add {
+    background-color: #007aff;
+    color: white;
+  }
+  
+  .nurse-input-overlay button.add:hover {
+    background-color: #005ecb;
+    transform: scale(1.03);
+  }
+  
+  .nurse-input-overlay button.cancel {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+  
+  .nurse-input-overlay button.cancel:hover {
+    background-color: #c8c8c8;
+    transform: scale(1.03);
+  }
+  
+  .delete-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+  }
+  
+  .delete-btn:hover svg {
+    stroke: #e74c3c;
+    transform: scale(1.1);
+  }
+  
+  .tab-menu {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  
+  .tab-btn {
+    padding: 8px 16px;
+    background-color: #eee;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .tab-btn.active {
+    background-color: #3498db;
+    color: white;
+  }
+  
+  .tab-content {
+    display: none;
+  }
+  
+  .tab-content:not(.hidden) {
+    display: block;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  
+  .header-bar h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+
+  .assignment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .assignment-nurse-name {
+    font-weight: bold;
+    font-size: 16px;
+    flex: 1;
+    min-width: 100px;
+  }
+  
+  .assignment-meta {
+    white-space: nowrap;
+    color: #2c3e50;
+    font-weight: 500;
+  }
+  
+  .assignment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+
+  .assignment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  .assignment-nurse-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #2c3e50;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%; /* 根據需要調整佔比 */
+  }
+  
+  .assignment-meta {
+    font-size: 15px;
+    font-weight: 500;
+    color: #2c3e50;
+    white-space: nowrap;
+    margin-left: auto;
+    flex-shrink: 0; /* ✅ 保持固定位置，不被擠壓 */
+  }
+  
+  
+  
+
+  .assignment-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .assignment-nurse-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #2c3e50;
+  }
+  
+  .assignment-meta {
+    font-size: 15px;
+    font-weight: 500;
+    color: #2c3e50;
+    white-space: nowrap;
+    padding-left: 20px; /* ✅ 額外往右內縮一點美觀 */
+  }
+  
+
+
+  

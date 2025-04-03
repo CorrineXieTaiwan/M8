@@ -4,23 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M8 護理排班系統 - 點班清單</title>
+    <!-- 添加 Noto Sans TC 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
-            padding: 20px;
+            font-family: 'Noto Sans TC', "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+            padding: 20px 20px 35px 20px;
             max-width: 1400px;
             margin: 0 auto;
             padding-bottom: 150px;
             transition: padding-bottom 0.3s ease;
         }
         * {
-            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+            font-family: 'Noto Sans TC', "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
         }
         button,
         select,
         input,
         option {
-            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+            font-family: 'Noto Sans TC', "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
         }
         .header {
             display: flex;
@@ -46,11 +48,13 @@
         .checklist-container {
             display: flex;
             gap: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
+            flex: 1;
+            height: calc(100vh - 270px); /* 可以微調這個值 */
         }
         .equipment-list {
             width: 350px;
-            max-height: 600px;
+            height: 600px; /* 設定固定高度 */
             overflow-y: auto;
             background-color: #f8f9fa;
             border-radius: 8px;
@@ -90,58 +94,102 @@
         }
         .beds-grid {
             flex: 1;
+            height: 600px; /* 設定相同的固定高度 */
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             gap: 15px;
-            max-height: 600px;
             overflow-y: auto;
+            padding: 15px; /* 增加內邊距 */
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .bed-cell {
             background-color: #f8f9fa;
             border-radius: 8px;
-            padding: 10px;
-            min-height: 100px;
-            max-height: 120px;
+            padding: 12px;
+            margin-bottom: 5px; /* 添加一點底部間距 */
+            min-height: 140px;
+            max-height: 140px;
             overflow-y: auto;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         .bed-number {
             font-weight: bold;
             margin-bottom: 8px;
-            color: #2196f3;
+            color: #757575;
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .bed-label {
+            color: #9e9e9e;
+            font-size: 0.85em;
+            font-weight: normal;
+        }
+        .bed-value {
+            color: #2196f3;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-left: auto;
         }
         .bed-equipment-list {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 5px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
         }
         .bed-equipment-tag {
             background-color: #e3f2fd;
             border: 1px solid #90caf9;
             border-radius: 4px;
-            padding: 3px 6px;
+            padding: 4px 8px;
             font-size: 0.85em;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 5px;
+            margin: 0;
+            min-height: 26px;
         }
-        .bed-equipment-tag .remove-btn {
+        .bed-equipment-tag .delete-equipment {
             color: #f44336;
             cursor: pointer;
             font-weight: bold;
             font-size: 14px;
+            margin-left: 5px;
+            display: inline-block;
+            padding: 0 4px;
+            opacity: 1;
+        }
+        .bed-equipment-tag.loan-in {
+            background-color: #fff8e1;
+            border-color: #ffc107;
+        }
+        .bed-equipment-tag.loan-out {
+            background-color: #ffebee;
+            border-color: #f44336;
         }
         .search-bar {
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
         }
         .search-bar input {
             width: 100%;
             padding: 8px 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            height: 36px;
+            box-sizing: border-box;
+            font-size: 14px;
         }
         .equipment-list-title {
             margin-top: 0;
@@ -179,7 +227,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1001;
-            width: 300px;
+            width: 350px;
         }
         .modal-header {
             display: flex;
@@ -196,11 +244,8 @@
         }
         .action-buttons {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
             right: 20px;
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
             z-index: 1000;
         }
         .floating-save-button {
@@ -217,18 +262,28 @@
             top: 20px;
             right: 20px;
             padding: 15px 25px;
-            background-color: #4CAF50;
             color: white;
             border-radius: 5px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transform: translateX(200%);
             transition: transform 0.3s ease-out;
             z-index: 1000;
+            min-width: 300px;
+            font-weight: 500;
         }
         .notification.show {
             transform: translateX(0);
         }
+        .notification.error {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
         .inventory-section {
+            flex: 0 0 auto; /* 不要伸縮 */
             margin-bottom: 20px;
             border-bottom: 1px solid #ddd;
             padding-bottom: 15px;
@@ -256,6 +311,16 @@
             align-items: center;
             font-size: 0.9em;
             min-height: 36px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .inventory-item:hover {
+            background-color: #bbdefb;
+        }
+        .inventory-item.selected {
+            background-color: #90caf9;
+            border-color: #42a5f5;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
         }
         .inventory-item-name {
             flex: 1;
@@ -290,11 +355,8 @@
         .main-content {
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 150px);
-        }
-        .checklist-container {
-            flex: 1;
-            overflow: hidden;
+            height: calc(100vh - 190px); /* 可以微調這個值 */
+            padding-bottom: 20px;
         }
         .stats-bar {
             background-color: #f8f9fa;
@@ -309,16 +371,47 @@
             text-align: center;
         }
         .stat-value {
-            font-size: 1.2em;
-            font-weight: bold;
+            font-size: 1.6em;
+            font-weight: 700;
             color: #2196f3;
+            margin-bottom: 5px;
         }
         .stat-label {
-            font-size: 0.8em;
+            font-size: 0.9em;
             color: #666;
         }
-        /* 添加借出/借入区域样式 */
+        .stat-card {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .stat-card.total .stat-value {
+            color: #2196f3;
+        }
+        .stat-card.assigned .stat-value {
+            color: #ff9800;
+        }
+        .stat-card.available .stat-value {
+            color: #4caf50;
+        }
+        .stat-card.loan-out .stat-value {
+            color: #f44336;
+        }
+        .stat-card.loan-in .stat-value {
+            color: #9c27b0;
+        }
+        .stat-card.beds .stat-value {
+            color: #607d8b;
+        }
         .loan-section {
+            flex: 0 0 auto; /* 不要伸縮 */
             margin-top: 20px;
             border-top: 1px solid #ddd;
             padding-top: 15px;
@@ -390,7 +483,6 @@
             border-left: 4px solid #ffc107;
         }
         
-        /* 修改库存区域样式 */
         .inventory-count {
             background-color: #42a5f5;
             color: white;
@@ -400,7 +492,6 @@
             text-align: center;
         }
         
-        /* 修改床位设备标签样式 */
         .bed-equipment-tag.loan-out {
             background-color: #ffebee;
             border-color: #f44336;
@@ -410,11 +501,27 @@
             background-color: #fff8e1;
             border-color: #ffc107;
         }
-        /* 標題容器樣式 */
         .title-container {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: relative;
+            width: 100%;
+            min-width: 1000px;
+            padding: 0 20px;
+        }
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+        .title-right {
+            display: flex;
+            align-items: center;
             gap: 30px;
+            flex-shrink: 0;
         }
         .head-nurse {
             font-size: 1.5rem;
@@ -422,27 +529,33 @@
             font-weight: 500;
             white-space: nowrap;
             border-left: 2px solid #90caf9;
-            padding-left: 30px;
+            padding-left: 20px;
         }
-        /* 日期時間顯示樣式 */
+        .hospital-logo {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
         .datetime-display {
-            margin-left: auto;
             text-align: right;
             color: #333;
+            min-width: 220px;
+            white-space: nowrap;
         }
         .datetime-line {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 20px;
+            gap: 30px;
         }
         #currentDate {
-            font-size: 1.4rem;
-            font-weight: 500;
-        }
-        #currentTime {
             font-size: 1.5rem;
             font-weight: 600;
+            color: #333;
+        }
+        #currentTime {
+            font-size: 1.6rem;
+            font-weight: 700;
             color: #333;
         }
         .action-buttons {
@@ -463,36 +576,122 @@
         .action-button:hover {
             background-color: #1976d2;
         }
-        /* 左下角导航按钮容器 */
         .bottom-nav-buttons {
             position: fixed;
             left: 20px;
             bottom: 20px;
-            z-index: 900; /* 确保在其他元素上方，但在保存按钮下方 */
+            z-index: 900;
         }
         
-        /* 调整保存按钮位置，避免与导航按钮重叠 */
-        .action-buttons {
-            position: fixed;
-            bottom: 20px;
-            right: 20px; /* 保持在右下角 */
+        .modal {
+            width: 350px;
+        }
+        
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+        
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .modal-form-group input,
+        .modal-form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            height: 36px;
+        }
+        
+        .modal-buttons {
             display: flex;
-            flex-direction: row;
+            justify-content: flex-end;
             gap: 10px;
-            z-index: 1000;
+            margin-top: 20px;
+        }
+        
+        .modal-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            border: none;
+        }
+        
+        .modal-button.cancel {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .modal-button.submit {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .modal-button.loan-out {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .modal-button.loan-in {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .equipment-list::-webkit-scrollbar,
+        .beds-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .equipment-list::-webkit-scrollbar-track,
+        .beds-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+            margin: 5px;
+        }
+
+        .equipment-list::-webkit-scrollbar-thumb,
+        .beds-grid::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .equipment-list::-webkit-scrollbar-thumb:hover,
+        .beds-grid::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        .inventory-grid {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .loan-content {
+            max-height: 200px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="title-container">
-            <h1>M8 護理排班系統</h1>
-            <span class="head-nurse">病房護理長：鐘黛瑩</span>
-            <div class="datetime-display">
-                <div class="datetime-line">
-                    <span id="currentDate"></span>
-                    <span id="currentTime"></span>
+            <div class="title-left">
+                <h1>M8 設備點班系統</h1>
+                <span class="head-nurse">病房護理長：鐘黛瑩</span>
+            </div>
+            <div class="title-right">
+                <div class="datetime-display">
+                    <div class="datetime-line">
+                        <span id="currentDate"></span>
+                        <span id="currentTime"></span>
+                    </div>
                 </div>
+                <img src="images/Chung_Shan_Medical_University_seal.svg.png" alt="中山醫學大學附設醫院" class="hospital-logo">
             </div>
         </div>
     </div>
@@ -521,7 +720,7 @@
             </div>
             <div class="stat-item">
                 <div class="stat-value" id="bedsWithEquipment">0</div>
-                <div class="stat-label">已配置床位</div>
+                <div class="stat-label">已配置床號</div>
             </div>
         </div>
 
@@ -536,7 +735,6 @@
                     </div>
                 </div>
                 
-                <!-- 添加借出/借入区域 -->
                 <div class="loan-section">
                     <div class="loan-tabs">
                         <button class="loan-tab active" onclick="showLoanTab('out')">借出區</button>
@@ -578,17 +776,18 @@
             <button class="modal-close" onclick="hideModal()">&times;</button>
         </div>
         <div class="modal-content">
-            <div style="margin-bottom: 15px;">
-                <label for="newEquipmentInput" style="display: block; margin-bottom: 5px;">設備名稱</label>
-                <input type="text" id="newEquipmentInput" placeholder="輸入設備名稱" style="width: 100%;">
+            <div class="modal-form-group">
+                <label for="newEquipmentInput">設備名稱</label>
+                <input type="text" id="newEquipmentInput" placeholder="輸入設備名稱">
             </div>
-            <div style="margin-bottom: 15px;">
-                <label for="newEquipmentTotal" style="display: block; margin-bottom: 5px;">設備數量</label>
-                <input type="number" id="newEquipmentTotal" value="1" min="1" style="width: 100%;">
+            <div class="modal-form-group">
+                <label for="newEquipmentTotal">設備數量</label>
+                <input type="number" id="newEquipmentTotal" value="1" min="1">
             </div>
-            <button onclick="addNewEquipment()" style="width: 100%; padding: 8px; background-color: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                新增
-            </button>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" onclick="hideModal()">取消</button>
+                <button class="modal-button submit" onclick="addNewEquipment()">新增</button>
+            </div>
         </div>
     </div>
 
@@ -599,23 +798,24 @@
             <button class="modal-close" onclick="hideModal()">&times;</button>
         </div>
         <div class="modal-content">
-            <div style="margin-bottom: 15px;">
-                <label for="loanOutEquipment" style="display: block; margin-bottom: 5px;">設備名稱</label>
-                <select id="loanOutEquipment" style="width: 100%;">
+            <div class="modal-form-group">
+                <label for="loanOutEquipment">設備名稱</label>
+                <select id="loanOutEquipment">
                     <!-- 选项将通过JavaScript动态生成 -->
                 </select>
             </div>
-            <div style="margin-bottom: 15px;">
-                <label for="loanOutQuantity" style="display: block; margin-bottom: 5px;">借出數量</label>
-                <input type="number" id="loanOutQuantity" value="1" min="1" style="width: 100%;">
+            <div class="modal-form-group">
+                <label for="loanOutQuantity">借出數量</label>
+                <input type="number" id="loanOutQuantity" value="1" min="1">
             </div>
-            <div style="margin-bottom: 15px;">
-                <label for="loanOutDepartment" style="display: block; margin-bottom: 5px;">借出單位</label>
-                <input type="text" id="loanOutDepartment" placeholder="輸入借出單位" style="width: 100%;">
+            <div class="modal-form-group">
+                <label for="loanOutDepartment">借出單位</label>
+                <input type="text" id="loanOutDepartment" placeholder="輸入借出單位">
             </div>
-            <button onclick="addLoanOutEquipment()" style="width: 100%; padding: 8px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                新增借出
-            </button>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" onclick="hideModal()">取消</button>
+                <button class="modal-button loan-out" onclick="addLoanOutEquipment()">新增借出</button>
+            </div>
         </div>
     </div>
 
@@ -625,21 +825,22 @@
             <button class="modal-close" onclick="hideModal()">&times;</button>
         </div>
         <div class="modal-content">
-            <div style="margin-bottom: 15px;">
-                <label for="loanInName" style="display: block; margin-bottom: 5px;">設備名稱</label>
-                <input type="text" id="loanInName" placeholder="輸入設備名稱" style="width: 100%;">
+            <div class="modal-form-group">
+                <label for="loanInName">設備名稱</label>
+                <input type="text" id="loanInName" placeholder="輸入設備名稱">
             </div>
-            <div style="margin-bottom: 15px;">
-                <label for="loanInQuantity" style="display: block; margin-bottom: 5px;">借入數量</label>
-                <input type="number" id="loanInQuantity" value="1" min="1" style="width: 100%;">
+            <div class="modal-form-group">
+                <label for="loanInQuantity">借入數量</label>
+                <input type="number" id="loanInQuantity" value="1" min="1">
             </div>
-            <div style="margin-bottom: 15px;">
-                <label for="loanInDepartment" style="display: block; margin-bottom: 5px;">借入單位</label>
-                <input type="text" id="loanInDepartment" placeholder="輸入借入單位" style="width: 100%;">
+            <div class="modal-form-group">
+                <label for="loanInDepartment">借入單位</label>
+                <input type="text" id="loanInDepartment" placeholder="輸入借入單位">
             </div>
-            <button onclick="addLoanInEquipment()" style="width: 100%; padding: 8px; background-color: #ffc107; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                新增借入
-            </button>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" onclick="hideModal()">取消</button>
+                <button class="modal-button loan-in" onclick="addLoanInEquipment()">新增借入</button>
+            </div>
         </div>
     </div>
 
@@ -745,9 +946,30 @@
                             item.classList.remove('selected');
                         });
                         
+                        // 取消借入设备的选中状态
+                        document.querySelectorAll('.loan-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
+                        // 取消库存项的选中状态
+                        document.querySelectorAll('.inventory-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
                         // 选中当前设备
                         this.classList.add('selected');
+                        
+                        // 同时选中对应的库存项
+                        const inventoryItem = document.querySelector(`.inventory-item[data-name="${this.dataset.name}"]`);
+                        if (inventoryItem) {
+                            inventoryItem.classList.add('selected');
+                        }
+                        
                         selectedEquipment = this.dataset.name;
+                        
+                        // 清除借入设备的选择
+                        selectedLoanType = null;
+                        selectedLoanEquipment = null;
                     });
                 }
                 
@@ -761,46 +983,56 @@
             updateStatistics();
         }
 
-        // 初始化床位格子
+        // 修改初始化床位網格函數，保留原有視覺設計
         function initializeBedsGrid() {
             const bedsGrid = document.getElementById('bedsGrid');
             bedsGrid.innerHTML = '';
             
-            // 获取床位配置
+            // 獲取床號配置和總床位數量
             let bedConfig = JSON.parse(localStorage.getItem('bedConfig')) || {};
+            const savedTotalBeds = parseInt(localStorage.getItem('totalBeds')) || 36;
             
-            for (let i = 1; i <= 36; i++) {
+            for (let i = 1; i <= savedTotalBeds; i++) {
                 const bedCell = document.createElement('div');
                 bedCell.className = 'bed-cell';
                 
                 const bedNumber = document.createElement('div');
                 bedNumber.className = 'bed-number';
                 
-                // 使用自定义名称或默认名称
+                // 創建床號標籤（"床號"文字）
+                const bedLabel = document.createElement('span');
+                bedLabel.className = 'bed-label';
+                bedLabel.textContent = '床號';
+                
+                // 創建床號數字
+                const bedValue = document.createElement('span');
+                bedValue.className = 'bed-value';
+                
+                // 使用自定義名稱或默認名稱
                 const bedId = `bed_${i-1}`;
                 const displayName = bedConfig[bedId] || i.toString();
-                bedNumber.textContent = `床位 ${displayName}`;
+                bedValue.textContent = displayName;
+                
+                // 組裝床號區域
+                bedNumber.appendChild(bedLabel);
+                bedNumber.appendChild(bedValue);
                 
                 const equipmentList = document.createElement('div');
                 equipmentList.className = 'bed-equipment-list';
                 equipmentList.dataset.bedNumber = i;
                 
-                // 添加点击事件，将选中的设备添加到床位
-                bedCell.addEventListener('click', function() {
-                    // 處理普通設備
-                    if (selectedEquipment) {
-                        addEquipmentToBed(selectedEquipment, i);
-                    } 
-                    // 處理借入設備
-                    else if (selectedLoanType === 'in' && selectedLoanEquipment !== null) {
-                        // 添加借入設備到床位
-                        addLoanInEquipmentToBed(selectedLoanEquipment, i);
-                    }
-                    // 注意：借出設備不能添加到床位
-                });
-                
                 bedCell.appendChild(bedNumber);
                 bedCell.appendChild(equipmentList);
+                
+                // 添加點擊事件
+                bedCell.addEventListener('click', function() {
+                    if (selectedEquipment) {
+                        addEquipmentToBed(selectedEquipment, i);
+                    } else if (selectedLoanType === 'in' && selectedLoanEquipment !== null) {
+                        addLoanInEquipmentToBed(selectedLoanEquipment, i);
+                    }
+                });
+                
                 bedsGrid.appendChild(bedCell);
             }
         }
@@ -818,18 +1050,27 @@
             // 獲取床位的設備列表
             const equipmentList = document.querySelector(`.bed-equipment-list[data-bed-number="${bedNumber}"]`);
             
-            // 創建設備標籤
+            // 創建設備標籤容器
             const equipmentTag = document.createElement('div');
             equipmentTag.className = 'bed-equipment-tag';
-            equipmentTag.textContent = equipmentName;
             equipmentTag.dataset.name = equipmentName;
             
-            // 添加刪除按鈕
+            // 創建名稱容器
+            const nameContainer = document.createElement('span');
+            nameContainer.className = 'equipment-name';
+            nameContainer.textContent = equipmentName;
+            
+            // 創建刪除按鈕
             const deleteButton = document.createElement('span');
             deleteButton.className = 'delete-equipment';
-            deleteButton.textContent = '×';
-            deleteButton.setAttribute('onclick', 'removeEquipmentFromBed(this)');
+            deleteButton.innerHTML = '×';
+            deleteButton.onclick = function(e) {
+                e.stopPropagation();
+                removeEquipmentFromBed(this);
+            };
             
+            // 組裝元素
+            equipmentTag.appendChild(nameContainer);
             equipmentTag.appendChild(deleteButton);
             equipmentList.appendChild(equipmentTag);
             
@@ -848,34 +1089,32 @@
 
         // 從床位移除設備
         function removeEquipmentFromBed(deleteButton) {
-            event.stopPropagation();
-            
-            // 獲取設備標籤和設備名稱
-            const equipmentTag = deleteButton.parentElement;
+            // 獲取整個設備標籤元素（父元素）
+            const equipmentTag = deleteButton.closest('.bed-equipment-tag');
+            if (!equipmentTag) return;
+
             const equipmentName = equipmentTag.dataset.name;
             const isLoanIn = equipmentTag.classList.contains('loan-in');
             const isLoanOut = equipmentTag.classList.contains('loan-out');
             
-            // 移除設備標籤
-            equipmentTag.remove();
-            
             if (isLoanIn) {
-                // 恢復借入設備的可用數量
+                // 處理借入設備
                 const loanItem = loanInEquipment.find(item => item.name === equipmentName);
                 if (loanItem) {
                     loanItem.available++;
-                    // 更新借入設備列表
                     initializeLoanInItems();
                 }
             } else if (!isLoanOut) {
-                // 恢復普通設備的可用數量
+                // 處理普通設備
                 const equipment = defaultEquipment.find(e => e.name === equipmentName);
                 if (equipment) {
                     equipment.available++;
-                    // 更新設備列表
                     initializeEquipmentList();
                 }
             }
+            
+            // 移除整個設備標籤
+            equipmentTag.remove();
             
             // 更新統計數據
             updateStatistics();
@@ -894,6 +1133,7 @@
                 // 创建库存项
                 const inventoryItem = document.createElement('div');
                 inventoryItem.className = 'inventory-item';
+                inventoryItem.dataset.name = item.name; // 添加数据属性以便识别
                 
                 const nameSpan = document.createElement('span');
                 nameSpan.className = 'inventory-item-name';
@@ -916,16 +1156,35 @@
                 // 点击库存项也可以选择设备
                 inventoryItem.addEventListener('click', function() {
                     if (item.available > 0) {
+                        // 取消借入设备的选中状态
+                        document.querySelectorAll('.loan-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
+                        // 取消所有设备项的选中状态
                         document.querySelectorAll('.equipment-item').forEach(elem => {
                             elem.classList.remove('selected');
                         });
                         
+                        // 取消所有库存项的选中状态
+                        document.querySelectorAll('.inventory-item').forEach(elem => {
+                            elem.classList.remove('selected');
+                        });
+                        
+                        // 选中当前库存项
+                        this.classList.add('selected');
+                        
+                        // 同时选中对应的设备项
                         const equipmentItem = document.querySelector(`.equipment-item[data-name="${item.name}"]`);
                         if (equipmentItem) {
                             equipmentItem.classList.add('selected');
                         }
                         
                         selectedEquipment = item.name;
+                        
+                        // 清除借入设备的选择
+                        selectedLoanType = null;
+                        selectedLoanEquipment = null;
                     }
                 });
                 
@@ -1005,180 +1264,141 @@
             }
         }
 
-        // 保存点班清单数据
+        // 加載點班數據
+        function loadChecklistData() {
+            const savedData = localStorage.getItem('checklistData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // 恢復設備列表
+                if (data.equipment) {
+                    // 更新默認設備列表
+                    for (let i = 0; i < defaultEquipment.length; i++) {
+                        if (i < data.equipment.length) {
+                            defaultEquipment[i].total = data.equipment[i].total;
+                            defaultEquipment[i].available = data.equipment[i].available;
+                        }
+                    }
+                    
+                    // 添加新增的設備
+                    for (let i = defaultEquipment.length; i < data.equipment.length; i++) {
+                        defaultEquipment.push(data.equipment[i]);
+                    }
+                }
+                
+                // 恢復借出設備列表
+                if (data.loanOut) {
+                    loanOutEquipment = data.loanOut;
+                }
+                
+                // 恢復借入設備列表
+                if (data.loanIn) {
+                    loanInEquipment = data.loanIn;
+                }
+                
+                // 恢復床位設備分配
+                if (data.beds) {
+                    for (let bedNumber in data.beds) {
+                        const equipmentList = document.querySelector(`.bed-equipment-list[data-bed-number="${bedNumber}"]`);
+                        if (equipmentList) {
+                            // 清空現有設備
+                            equipmentList.innerHTML = '';
+                            
+                            // 添加保存的設備
+                            data.beds[bedNumber].forEach(item => {
+                                const equipmentTag = document.createElement('div');
+                                equipmentTag.className = `bed-equipment-tag ${item.type || ''}`;
+                                equipmentTag.textContent = item.name;
+                                equipmentTag.dataset.name = item.name;
+                                
+                                if (item.source) {
+                                    equipmentTag.dataset.source = item.source;
+                                }
+                                
+                                // 添加刪除按鈕
+                                const deleteButton = document.createElement('span');
+                                deleteButton.className = 'delete-equipment';
+                                deleteButton.textContent = '×';
+                                deleteButton.setAttribute('onclick', 'removeEquipmentFromBed(this)');
+                                
+                                equipmentTag.appendChild(deleteButton);
+                                equipmentList.appendChild(equipmentTag);
+                            });
+                        }
+                    }
+                }
+                
+                // 更新設備列表和統計數據
+                initializeEquipmentList();
+                initializeLoanOutItems();
+                initializeLoanInItems();
+                updateStatistics();
+            }
+        }
+        
+        // 保存點班數據
         function saveChecklistData() {
-            // 收集床位設備數據
-            const bedsData = {};
+            // 創建要保存的數據對象
+            const checklistData = {
+                equipment: defaultEquipment,
+                loanOut: loanOutEquipment,
+                loanIn: loanInEquipment,
+                beds: {}
+            };
             
-            for (let i = 1; i <= 36; i++) {
+            // 獲取實際的床位數量
+            const savedTotalBeds = parseInt(localStorage.getItem('totalBeds')) || 36;
+            
+            // 收集床位設備分配
+            for (let i = 1; i <= savedTotalBeds; i++) {
                 const equipmentList = document.querySelector(`.bed-equipment-list[data-bed-number="${i}"]`);
-                if (equipmentList) {
+                if (equipmentList) {  // 確保元素存在
                     const equipmentTags = equipmentList.querySelectorAll('.bed-equipment-tag');
+                    
                     if (equipmentTags.length > 0) {
-                        bedsData[i] = Array.from(equipmentTags).map(tag => {
-                            const data = {
+                        checklistData.beds[i] = [];
+                        
+                        equipmentTags.forEach(tag => {
+                            const equipmentData = {
                                 name: tag.dataset.name,
-                                isLoanIn: tag.classList.contains('loan-in'),
-                                isLoanOut: tag.classList.contains('loan-out')
+                                type: tag.classList.contains('loan-in') ? 'loan-in' : 
+                                      tag.classList.contains('loan-out') ? 'loan-out' : ''
                             };
                             
                             if (tag.dataset.source) {
-                                data.source = tag.dataset.source;
+                                equipmentData.source = tag.dataset.source;
                             }
                             
-                            return data;
+                            checklistData.beds[i].push(equipmentData);
                         });
                     }
                 }
             }
             
-            // 準備保存的數據
-            const dataToSave = {
-                equipment: defaultEquipment,
-                loanOut: loanOutEquipment,
-                loanIn: loanInEquipment,
-                beds: bedsData
-            };
+            // 保存到localStorage
+            localStorage.setItem('checklistData', JSON.stringify(checklistData));
             
-            // 保存到 localStorage
-            localStorage.setItem('checklistData', JSON.stringify(dataToSave));
-            
-            showNotification('點班清單已保存！');
-        }
-
-        // 加载点班清单数据
-        function loadChecklistData() {
-            const savedData = localStorage.getItem('checklistData');
-            if (!savedData) return;
-            
-            try {
-                const data = JSON.parse(savedData);
-                
-                // 恢復設備數據
-                if (data.equipment) {
-                    defaultEquipment.length = 0; // 清空現有數據
-                    data.equipment.forEach(item => defaultEquipment.push(item));
-                }
-                
-                // 恢復借出設備數據
-                if (data.loanOut) {
-                    loanOutEquipment = data.loanOut;
-                } else if (data.loanOutEquipment) {
-                    // 兼容舊版數據格式
-                    loanOutEquipment = data.loanOutEquipment;
-                }
-                
-                // 恢復借入設備數據
-                if (data.loanIn) {
-                    loanInEquipment = data.loanIn;
-                } else if (data.loanInEquipment) {
-                    // 兼容舊版數據格式
-                    loanInEquipment = data.loanInEquipment;
-                }
-                
-                // 初始化設備列表
-                initializeEquipmentList();
-                initializeLoanOutItems();
-                initializeLoanInItems();
-                
-                // 恢復床位設備數據
-                if (data.beds && typeof data.beds === 'object' && !Array.isArray(data.beds)) {
-                    // 新版數據格式
-                    for (const bedNumber in data.beds) {
-                        const bedEquipment = data.beds[bedNumber];
-                        const equipmentList = document.querySelector(`.bed-equipment-list[data-bed-number="${bedNumber}"]`);
-                        
-                        if (equipmentList && bedEquipment && bedEquipment.length > 0) {
-                            // 清空現有設備
-                            equipmentList.innerHTML = '';
-                            
-                            // 添加保存的設備
-                            bedEquipment.forEach(eq => {
-                                // 創建設備標籤
-                                const equipmentTag = document.createElement('div');
-                                
-                                // 設置適當的類別
-                                if (eq.isLoanIn) {
-                                    equipmentTag.className = 'bed-equipment-tag loan-in';
-                                } else if (eq.isLoanOut) {
-                                    equipmentTag.className = 'bed-equipment-tag loan-out';
-                                } else {
-                                    equipmentTag.className = 'bed-equipment-tag';
-                                }
-                                
-                                // 設置設備名稱
-                                equipmentTag.textContent = eq.name;
-                                equipmentTag.dataset.name = eq.name;
-                                
-                                if (eq.source) {
-                                    equipmentTag.dataset.source = eq.source;
-                                }
-                                
-                                // 添加刪除按鈕
-                                const deleteButton = document.createElement('span');
-                                deleteButton.className = 'delete-equipment';
-                                deleteButton.textContent = '×';
-                                deleteButton.setAttribute('onclick', 'removeEquipmentFromBed(this)');
-                                
-                                equipmentTag.appendChild(deleteButton);
-                                equipmentList.appendChild(equipmentTag);
-                            });
-                        }
-                    }
-                } else if (data.beds && Array.isArray(data.beds)) {
-                    // 舊版數據格式
-                    data.beds.forEach(bedData => {
-                        const bedNumber = bedData.bedNumber;
-                        const equipmentList = document.querySelector(`.bed-equipment-list[data-bed-number="${bedNumber}"]`);
-                        
-                        if (equipmentList && bedData.equipment && bedData.equipment.length > 0) {
-                            // 清空現有設備
-                            equipmentList.innerHTML = '';
-                            
-                            // 添加保存的設備
-                            bedData.equipment.forEach(eq => {
-                                // 創建設備標籤
-                                const equipmentTag = document.createElement('div');
-                                
-                                // 設置適當的類別
-                                if (eq.isLoanIn) {
-                                    equipmentTag.className = 'bed-equipment-tag loan-in';
-                                } else {
-                                    equipmentTag.className = 'bed-equipment-tag';
-                                }
-                                
-                                // 設置設備名稱
-                                equipmentTag.textContent = eq.name;
-                                equipmentTag.dataset.name = eq.name;
-                                
-                                // 添加刪除按鈕
-                                const deleteButton = document.createElement('span');
-                                deleteButton.className = 'delete-equipment';
-                                deleteButton.textContent = '×';
-                                deleteButton.setAttribute('onclick', 'removeEquipmentFromBed(this)');
-                                
-                                equipmentTag.appendChild(deleteButton);
-                                equipmentList.appendChild(equipmentTag);
-                            });
-                        }
-                    });
-                }
-                
-                // 更新統計數據
-                updateStatistics();
-                
-            } catch (error) {
-                console.error('加載點班數據時出錯:', error);
-            }
+            // 顯示成功通知
+            showNotification('點班數據已保存');
         }
 
         // 显示通知
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             notification.textContent = message;
-            notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#F44336';
+            
+            // 根據不同類型設置不同的樣式
+            if (type === 'error') {
+                notification.style.backgroundColor = '#ff4d4f';
+                notification.style.borderLeft = '5px solid #f5222d';
+            } else {
+                notification.style.backgroundColor = '#52c41a';
+                notification.style.borderLeft = '5px solid #389e0d';
+            }
+            
             notification.classList.add('show');
             
+            // 3秒後自動隱藏
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
@@ -1193,13 +1413,20 @@
 
         // 完善删除设备功能，添加防呆机制
         function deleteEquipment(equipmentName) {
-            console.log("尝试删除设备:", equipmentName);
+            console.log("嘗試刪除設備:", equipmentName);
             
-            // 检查设备是否已分配到床位
+            // 1. 首先檢查是否有未歸還的借出設備
+            const hasLoanedOut = loanOutEquipment.some(item => item.name === equipmentName);
+            if (hasLoanedOut) {
+                showNotification('此設備尚有借出未歸還，請先處理借出設備後再進行刪除', 'error');
+                return;
+            }
+
+            // 2. 檢查設備是否已分配到床位
             let isAssigned = false;
+            const savedTotalBeds = parseInt(localStorage.getItem('totalBeds')) || 36;
             
-            // 遍历所有床位，检查是否有该设备
-            for (let i = 1; i <= 36; i++) {
+            for (let i = 1; i <= savedTotalBeds; i++) {
                 const equipmentList = document.querySelector(`.bed-equipment-list[data-bed-number="${i}"]`);
                 if (equipmentList) {
                     const equipmentTags = equipmentList.querySelectorAll('.bed-equipment-tag');
@@ -1212,15 +1439,15 @@
                 if (isAssigned) break;
             }
             
-            // 如果设备已分配到床位，显示错误提示
+            // 3. 如果設備已分配到床位，顯示錯誤提示
             if (isAssigned) {
                 showNotification('此設備使用中，無法進行變更', 'error');
                 return;
             }
             
-            // 二次确认
+            // 4. 如果通過所有檢查，詢問確認刪除
             if (confirm(`確定要刪除「${equipmentName}」設備嗎？此操作無法恢復。`)) {
-                // 从设备列表中删除
+                // 從設備列表中刪除
                 const index = defaultEquipment.findIndex(e => e.name === equipmentName);
                 if (index !== -1) {
                     defaultEquipment.splice(index, 1);
@@ -1256,7 +1483,7 @@
             // 計算借入總數
             const loanInTotal = loanInEquipment.reduce((sum, item) => sum + item.count, 0);
             
-            // 計算已配置床位數
+            // 計算已配置床號數
             let bedsWithEquipment = 0;
             for (let i = 1; i <= 36; i++) {
                 const equipmentList = document.querySelector(`.bed-equipment-list[data-bed-number="${i}"]`);
@@ -1420,13 +1647,23 @@
                             item.classList.remove('selected');
                         });
                         
+                        // 取消单位设备的选中状态
+                        document.querySelectorAll('.equipment-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
+                        // 取消库存项的选中状态
+                        document.querySelectorAll('.inventory-item').forEach(item => {
+                            item.classList.remove('selected');
+                        });
+                        
                         // 选中当前设备
                         this.classList.add('selected');
                         selectedLoanType = 'in';
                         selectedLoanEquipment = index;
                         
-                        // 更新床位状态
-                        updateBedButtonsStatus();
+                        // 清除单位设备的选择
+                        selectedEquipment = null;
                     });
                 }
                 
@@ -1458,6 +1695,12 @@
                 option.textContent = '沒有可借出的設備';
                 select.appendChild(option);
             }
+            
+            // 重置借出數量為1
+            document.getElementById('loanOutQuantity').value = '1';
+            
+            // 清空借出單位輸入框
+            document.getElementById('loanOutDepartment').value = '';
             
             document.getElementById('modalBackdrop').style.display = 'block';
             document.getElementById('loanOutModal').style.display = 'block';
@@ -1561,7 +1804,7 @@
             // 更新UI
             initializeLoanOutItems();
             initializeEquipmentList();
-            showNotification('借出設備已刪除');
+            showNotification('借出設備已歸還');
         }
         
         // 删除借入设备
@@ -1605,11 +1848,11 @@
         function updateDateTime() {
             const now = new Date();
             
-            // 格式化日期：年/月/日 星期幾
+            // 格式化日期：年/月/日 星期几（增加间距）
             const days = ['日', '一', '二', '三', '四', '五', '六'];
-            const dateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} 星期${days[now.getDay()]}`;
+            const dateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}   星期${days[now.getDay()]}`;
             
-            // 格式化時間：時:分
+            // 格式化时间：时:分
             const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
             
             document.getElementById('currentDate').textContent = dateStr;
@@ -1634,19 +1877,28 @@
             // 獲取床位的設備列表
             const equipmentList = document.querySelector(`.bed-equipment-list[data-bed-number="${bedNumber}"]`);
             
-            // 創建設備標籤
+            // 創建設備標籤容器
             const equipmentTag = document.createElement('div');
             equipmentTag.className = 'bed-equipment-tag loan-in';
-            equipmentTag.textContent = loanItem.name;
             equipmentTag.dataset.name = loanItem.name;
             equipmentTag.dataset.source = loanItem.source;
             
-            // 添加刪除按鈕
+            // 創建名稱容器
+            const nameContainer = document.createElement('span');
+            nameContainer.className = 'equipment-name';
+            nameContainer.textContent = loanItem.name;
+            
+            // 創建刪除按鈕
             const deleteButton = document.createElement('span');
             deleteButton.className = 'delete-equipment';
-            deleteButton.textContent = '×';
-            deleteButton.setAttribute('onclick', 'removeEquipmentFromBed(this)');
+            deleteButton.innerHTML = '×';
+            deleteButton.onclick = function(e) {
+                e.stopPropagation();
+                removeEquipmentFromBed(this);
+            };
             
+            // 組裝元素
+            equipmentTag.appendChild(nameContainer);
             equipmentTag.appendChild(deleteButton);
             equipmentList.appendChild(equipmentTag);
             
@@ -1698,6 +1950,34 @@
             
             // 保存點班數據
             saveChecklistData();
+        }
+
+        // 初始化床號數據
+        function initializeBeds() {
+            // 初始化床號按鈕或列表
+            const bedContainer = document.querySelector('.bed-container'); // 或者你的設備點班系統中顯示床號的容器
+            bedContainer.innerHTML = ''; // 清空現有床號
+            
+            // 獲取床號配置和總床位數量
+            let bedConfig = JSON.parse(localStorage.getItem('bedConfig')) || {};
+            const savedTotalBeds = parseInt(localStorage.getItem('totalBeds')) || totalBeds;
+            
+            // 生成床號元素
+            for (let i = 0; i < savedTotalBeds; i++) {
+                const bedId = `bed_${i}`;
+                // 使用自定義名稱或默認名稱
+                const displayName = bedConfig[bedId] || (i + 1).toString();
+                
+                // 創建床號元素 (根據你的設備點班系統的具體實現來調整)
+                const bedElement = document.createElement('div');
+                bedElement.className = 'bed-item';
+                bedElement.dataset.index = i;
+                bedElement.textContent = displayName;
+                
+                // 添加點擊事件或其他必要的功能
+                
+                bedContainer.appendChild(bedElement);
+            }
         }
     </script>
 </body>

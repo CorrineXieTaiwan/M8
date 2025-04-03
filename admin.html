@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M8 護理排班系統 - 系統設定</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+            font-family: 'Noto Sans TC', "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
             padding: 20px;
             max-width: 1400px;
             margin: 0 auto;
         }
         * {
-            font-family: "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+            font-family: 'Noto Sans TC', "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
         }
         .header {
             display: flex;
@@ -77,6 +78,7 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 20px;
+            margin-bottom: 20px;
         }
         .nurse-tag {
             padding: 8px 12px;
@@ -102,10 +104,12 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-right: 10px;
             font-size: 16px;
             transition: background-color 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 150px;
+            font-weight: 500;
         }
         .save-button:hover {
             background-color: #F57C00;
@@ -153,6 +157,7 @@
             padding: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
+            align-items: center;
         }
         
         .bed-config-item:hover {
@@ -168,28 +173,24 @@
             border-bottom: 1px solid #e0e0e0;
             padding-bottom: 6px;
             text-align: center;
+            width: 100%; /* 讓標籤寬度為100%，使底線延伸整個容器寬度 */
         }
         
         .bed-config-item input {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            width: calc(100% - 16px);
+            width: 80%;
             font-size: 0.9em;
             text-align: center;
             transition: border-color 0.3s;
             box-sizing: border-box;
-        }
-        
-        .bed-config-item input:focus {
-            border-color: #42a5f5;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
+            margin: 0 auto;
         }
         
         .bed-reset-all {
-            margin-bottom: 20px;
-            padding: 10px 20px;
+            margin-right: 10px;
+            padding: 8px 16px;
             background-color: #f5f5f5;
             color: #f44336;
             border: 1px solid #f44336;
@@ -197,6 +198,7 @@
             cursor: pointer;
             font-weight: 500;
             transition: background-color 0.3s, color 0.3s;
+            width: 150px;
         }
         
         .bed-reset-all:hover {
@@ -212,15 +214,40 @@
         }
         
         .bed-management-title {
-            font-size: 1.2em;
+            font-size: 1em;  /* 調整為與系統初始化說明文字相同的大小 */
             color: #333;
+        }
+        
+        /* 修改系統初始化說明文字樣式 */
+        .system-reset-description {
+            margin-bottom: 20px;
+            color: #555;
+            text-align: left;
+            display: inline-block;
         }
         
         /* 標題容器樣式 */
         .title-container {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: relative;
+            width: 100%;
+            min-width: 1000px;
+            padding: 0 20px;
+        }
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+        .title-right {
+            display: flex;
+            align-items: center;
             gap: 30px;
+            flex-shrink: 0;
         }
         .head-nurse {
             font-size: 1.5rem;
@@ -228,27 +255,35 @@
             font-weight: 500;
             white-space: nowrap;
             border-left: 2px solid #90caf9;
-            padding-left: 30px;
+            padding-left: 20px;
         }
-        /* 日期時間顯示樣式 */
+        /* 添加医院标志样式 */
+        .hospital-logo {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+        /* 修改日期时间显示样式 */
         .datetime-display {
-            margin-left: auto;
             text-align: right;
             color: #333;
+            min-width: 220px;
+            white-space: nowrap;
         }
         .datetime-line {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 20px;
+            gap: 30px; /* 增加间距 */
         }
         #currentDate {
-            font-size: 1.4rem;
-            font-weight: 500;
+            font-size: 1.5rem; /* 增大字体 */
+            font-weight: 600; /* 加粗字体 */
+            color: #333; /* 改为黑色 */
         }
         #currentTime {
-            font-size: 1.5rem;
-            font-weight: 600;
+            font-size: 1.6rem; /* 增大字体 */
+            font-weight: 700; /* 更加粗的字体 */
             color: #333;
         }
         /* 移除之前添加的浮动按钮样式 */
@@ -269,23 +304,194 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            margin-top: 20px;
+            margin-right: 10px;
             font-size: 16px;
             transition: background-color 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            width: 150px;
+            font-weight: 500;
+        }
+        /* 新增床號管理按鈕樣式 */
+        .bed-management-actions {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .bed-action-button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
+            width: 150px;
+            margin-right: 10px;
+        }
+
+        .bed-add-button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+        }
+
+        .bed-add-button:hover {
+            background-color: #388e3c;
+        }
+
+        .bed-delete-button {
+            background-color: #f5f5f5;
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .bed-delete-button:hover {
+            background-color: #f44336;
+            color: white;
+        }
+        /* 系統初始化按鈕樣式 */
+        .system-reset-button {
+            padding: 12px 24px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 30px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: block;
+            width: 300px;
+            text-align: center;
+        }
+        
+        .system-reset-button:hover {
+            background-color: #d32f2f;
+        }
+        
+        /* 系統初始化容器樣式 */
+        .system-reset-container {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        /* 系統初始化確認彈窗樣式 */
+        #resetConfirmationModal {
+            width: 400px;
+        }
+        
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-close {
+            border: none;
+            background: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* 點班項目和消防編組管理樣式 */
+        .level-management,
+        .fire-team-management {
+            margin-bottom: 30px;
+        }
+        .level-input-group,
+        .fire-team-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .level-input-group input,
+        .fire-team-input-group input {
+            flex: 1;
+            max-width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .level-input-group button,
+        .fire-team-input-group button {
+            padding: 8px 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .level-list,
+        .fire-team-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .level-tag,
+        .fire-team-tag {
+            padding: 8px 12px;
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .level-tag button,
+        .fire-team-tag button {
+            border: none;
+            background: none;
+            color: #f44336;
+            cursor: pointer;
+            padding: 0;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="title-container">
-            <h1>M8 護理排班系統</h1>
-            <span class="head-nurse">病房護理長：鐘黛瑩</span>
-            <div class="datetime-display">
-                <div class="datetime-line">
-                    <span id="currentDate"></span>
-                    <span id="currentTime"></span>
+            <div class="title-left">
+                <h1>M8 護理排班系統</h1>
+                <span class="head-nurse">病房護理長：鐘黛瑩</span>
+            </div>
+            <div class="title-right">
+                <div class="datetime-display">
+                    <div class="datetime-line">
+                        <span id="currentDate"></span>
+                        <span id="currentTime"></span>
+                    </div>
                 </div>
+                <img src="images/Chung_Shan_Medical_University_seal.svg.png" alt="中山醫學大學附設醫院" class="hospital-logo">
             </div>
         </div>
     </div>
@@ -303,16 +509,55 @@
                 <!-- 護理師標籤將在這裡動態生成 -->
             </div>
             
-            <button class="save-button" onclick="saveNurses()">保存設定</button>
+            <div style="text-align: right; margin-top: 30px; clear: both;">
+                <button class="save-button" onclick="saveNurses()">保存人員設定</button>
+            </div>
+        </div>
+
+        <!-- 新增點班項目管理部分 -->
+        <div class="settings-title">點班項目管理</div>
+        
+        <div class="level-management">
+            <div class="level-input-group">
+                <input type="text" id="levelInput" placeholder="輸入點班項目">
+                <button onclick="addLevel()">新增點班項目</button>
+            </div>
+            
+            <div class="level-list" id="levelList">
+                <!-- 點班項目標籤將在這裡動態生成 -->
+            </div>
+            
+            <div style="text-align: right; margin-top: 30px; clear: both;">
+                <button class="save-button" onclick="saveLevels()">保存點班設定</button>
+            </div>
+        </div>
+
+        <!-- 新增消防編組管理部分 -->
+        <div class="settings-title">消防編組管理</div>
+        
+        <div class="fire-team-management">
+            <div class="fire-team-input-group">
+                <input type="text" id="fireTeamInput" placeholder="輸入消防編組名稱">
+                <button onclick="addFireTeam()">新增消防編組</button>
+            </div>
+            
+            <div class="fire-team-list" id="fireTeamList">
+                <!-- 消防編組標籤將在這裡動態生成 -->
+            </div>
+            
+            <div style="text-align: right; margin-top: 30px; clear: both;">
+                <button class="save-button" onclick="saveFireTeams()">保存編組設定</button>
+            </div>
         </div>
         
         <!-- 新增床位管理部分 -->
-        <div class="settings-title">床位名稱管理</div>
+        <div class="settings-title">床號管理</div>
         
         <div class="bed-management">
             <div class="bed-management-header">
-                <span class="bed-management-title">自定義床位顯示名稱</span>
-                <button class="bed-reset-all" onclick="resetAllBeds()">重置所有床位名稱</button>
+                <div style="padding-left: 20px;">
+                    <span class="bed-management-title">自定義床位顯示名稱</span>
+                </div>
             </div>
             
             <div class="bed-grid-container">
@@ -323,7 +568,61 @@
             
             <!-- 修改保存床位设定按钮位置，放回床位管理框内的右下角 -->
             <div style="text-align: right; margin-top: 20px;">
+                <button class="bed-action-button bed-add-button" onclick="addNewBed()">新增床位</button>
+                <button class="bed-action-button bed-delete-button" onclick="deleteLastBed()">刪除最後一個床位</button>
+                <button class="bed-reset-all" onclick="resetAllBeds()">重置所有床位名稱</button>
                 <button class="save-button" onclick="saveBedConfig()">保存床位設定</button>
+            </div>
+        </div>
+        
+        <!-- 新增系統初始化部分 -->
+        <div class="settings-title">系統初始化</div>
+        
+        <div class="system-reset-container">
+            <p class="system-reset-description">
+                點擊下方按鈕將重置所有系統數據至預設狀態，包括護理師名單、床位分配、排班資料、研究床號預約及設備點班系統等。<strong style="color: #f44336;">此操作不可恢復！</strong>
+            </p>
+            
+            <div style="display: flex; justify-content: flex-end; width: 100%;">
+                <button class="system-reset-button" onclick="showResetConfirmation()">
+                    系統初始化
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加初始化确认弹窗 -->
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal" id="resetConfirmationModal">
+        <div class="modal-header">
+            <h3>系統初始化確認</h3>
+            <button class="modal-close" onclick="hideResetConfirmation()">&times;</button>
+        </div>
+        <div class="modal-content">
+            <p style="color: #f44336; margin-bottom: 20px;">
+                <strong>警告：</strong>您即將重置整個系統至預設狀態！所有自定義數據將被刪除，包括護理師名單、床位配置、排班資料、研究床號預約及設備點班系統數據等。<br><br>
+                <strong>此操作不可恢復！</strong>
+            </p>
+            <div id="firstConfirmation" style="display: flex; gap: 10px;">
+                <button onclick="hideResetConfirmation()" style="flex: 1; padding: 8px; background-color: #9e9e9e; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    取消
+                </button>
+                <button onclick="showSecondConfirmation()" style="flex: 1; padding: 8px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    確認重置
+                </button>
+            </div>
+            <div id="secondConfirmation" style="display: none;">
+                <p style="color: #f44336; margin-bottom: 20px;">
+                    <strong>最後確認：</strong>請再次點擊下方按鈕以完成系統重置。
+                </p>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="hideResetConfirmation()" style="flex: 1; padding: 8px; background-color: #9e9e9e; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        取消
+                    </button>
+                    <button onclick="resetAllSystemData()" style="flex: 1; padding: 8px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                        最終確認重置
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -428,16 +727,72 @@
         // 床位管理功能
         const totalBeds = 36; // 總床位數量
         
-        // 初始化床位配置
+        // 新增床號
+        function addNewBed() {
+            const bedConfigGrid = document.getElementById('bedConfigGrid');
+            const currentBedCount = bedConfigGrid.children.length;
+            
+            // 創建新的床位配置項
+            const configItem = document.createElement('div');
+            configItem.className = 'bed-config-item';
+            
+            const bedId = `bed_${currentBedCount}`;
+            const defaultName = (currentBedCount + 1).toString();
+            
+            const label = document.createElement('label');
+            label.textContent = `床位 ${currentBedCount + 1}`;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = defaultName;
+            input.placeholder = `請輸入床位名稱`;
+            input.dataset.bedId = bedId;
+            input.dataset.defaultName = defaultName;
+            
+            configItem.appendChild(label);
+            configItem.appendChild(input);
+            
+            bedConfigGrid.appendChild(configItem);
+            
+            // 更新總床位數量
+            localStorage.setItem('totalBeds', currentBedCount + 1);
+            
+            showNotification('已新增一個床位');
+        }
+
+        // 刪除最後一個床號
+        function deleteLastBed() {
+            const bedItems = document.querySelectorAll('.bed-config-item');
+            if (bedItems.length <= 1) {
+                showNotification('至少需要保留一個床位');
+                return;
+            }
+            
+            if (confirm('確定要刪除最後一個床位嗎？這可能會影響現有的排班數據。')) {
+                // 刪除最後一個床位配置項
+                const lastBed = bedItems[bedItems.length - 1];
+                lastBed.remove();
+                
+                // 更新總床位數量
+                localStorage.setItem('totalBeds', bedItems.length - 1);
+                
+                showNotification('已刪除最後一個床位');
+            }
+        }
+
+        // 修改初始化床位配置函數，使用localStorage中保存的床位數量
         function initializeBedConfig() {
             const bedConfigGrid = document.getElementById('bedConfigGrid');
             bedConfigGrid.innerHTML = '';
+            
+            // 獲取保存的床位數量，默認為36
+            const savedTotalBeds = parseInt(localStorage.getItem('totalBeds')) || totalBeds;
             
             // 獲取保存的床位配置
             let bedConfig = JSON.parse(localStorage.getItem('bedConfig')) || {};
             
             // 生成床位配置項
-            for (let i = 0; i < totalBeds; i++) {
+            for (let i = 0; i < savedTotalBeds; i++) {
                 const bedId = `bed_${i}`;
                 const defaultName = (i + 1).toString();
                 const currentName = bedConfig[bedId] || defaultName;
@@ -451,7 +806,7 @@
                 const input = document.createElement('input');
                 input.type = 'text';
                 input.value = currentName;
-                input.placeholder = `輸入床位${i + 1}名稱`;
+                input.placeholder = `請輸入床位名稱`;
                 input.dataset.bedId = bedId;
                 input.dataset.defaultName = defaultName;
                 
@@ -461,8 +816,8 @@
                 bedConfigGrid.appendChild(configItem);
             }
         }
-        
-        // 保存床位配置
+
+        // 修改保存床位配置函數，同時保存床位數量
         function saveBedConfig() {
             const inputs = document.querySelectorAll('.bed-config-item input');
             let bedConfig = {};
@@ -480,7 +835,12 @@
                 }
             });
             
+            // 保存床位配置
             localStorage.setItem('bedConfig', JSON.stringify(bedConfig));
+            
+            // 保存當前床位數量
+            localStorage.setItem('totalBeds', inputs.length);
+            
             showNotification('床位設定已保存！');
         }
         
@@ -498,11 +858,11 @@
         function updateDateTime() {
             const now = new Date();
             
-            // 格式化日期：年/月/日 星期幾
+            // 格式化日期：年/月/日 星期几（增加间距）
             const days = ['日', '一', '二', '三', '四', '五', '六'];
-            const dateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} 星期${days[now.getDay()]}`;
+            const dateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}   星期${days[now.getDay()]}`;
             
-            // 格式化時間：時:分
+            // 格式化时间：时:分
             const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
             
             document.getElementById('currentDate').textContent = dateStr;
@@ -517,8 +877,13 @@
             // 更新標題
             document.querySelector('.title-container h1').textContent = 'M8 系統管理設定';
             
+            // 初始化所有數據
             loadNurses();
             initializeBedConfig();
+            loadLevels();
+            loadFireTeams();
+            
+            // 更新日期時間
             updateDateTime();
             setInterval(updateDateTime, 60000);
         });
@@ -527,6 +892,229 @@
         function navigateTo(page) {
             localStorage.setItem('currentPage', page);
             window.location.href = page;
+        }
+
+        // 显示重置确认弹窗
+        function showResetConfirmation() {
+            document.getElementById('modalBackdrop').style.display = 'block';
+            document.getElementById('resetConfirmationModal').style.display = 'block';
+            // 重置確認狀態
+            document.getElementById('firstConfirmation').style.display = 'flex';
+            document.getElementById('secondConfirmation').style.display = 'none';
+        }
+        
+        // 显示第二次确认
+        function showSecondConfirmation() {
+            document.getElementById('firstConfirmation').style.display = 'none';
+            document.getElementById('secondConfirmation').style.display = 'block';
+        }
+        
+        // 隐藏重置确认弹窗
+        function hideResetConfirmation() {
+            document.getElementById('modalBackdrop').style.display = 'none';
+            document.getElementById('resetConfirmationModal').style.display = 'none';
+            // 重置確認狀態
+            document.getElementById('firstConfirmation').style.display = 'flex';
+            document.getElementById('secondConfirmation').style.display = 'none';
+        }
+        
+        // 重置所有系统数据到预设状态
+        function resetAllSystemData() {
+            // 先關閉確認視窗
+            hideResetConfirmation();
+            
+            // 1. 重置护理师名单到预设状态
+            const defaultNurses = [
+                "謝靜伊",
+                "王小明",
+                "周杰倫",
+                "高小美",
+                "蔡阿嘎"
+            ];
+            nurses = new Set(defaultNurses);
+            localStorage.setItem('nurseList', JSON.stringify(Array.from(nurses)));
+            
+            // 2. 重置床号配置
+            localStorage.removeItem('bedConfig');
+            
+            // 3. 重置排班数据
+            localStorage.removeItem('scheduleData');
+            
+            // 4. 重置研究床号预约
+            localStorage.removeItem('researchBedReservations');
+            
+            // 5. 重置设备点班系统数据
+            const defaultEquipmentList = [
+                { name: "IV Pump", total: 10, available: 10 },
+                { name: "血氧機", total: 10, available: 10 },
+                { name: "氧氣筒", total: 10, available: 10 },
+                { name: "烤燈", total: 1, available: 1 },
+                { name: "小床", total: 2, available: 2 },
+                { name: "床磅", total: 1, available: 1 }
+            ];
+            
+            const newChecklistData = {
+                equipment: defaultEquipmentList,
+                loanOut: [],
+                loanIn: [],
+                beds: {}
+            };
+            
+            localStorage.setItem('checklistData', JSON.stringify(newChecklistData));
+            
+            // 6. 重置总床位数量为默认值
+            localStorage.setItem('totalBeds', totalBeds);
+            
+            // 7. 重置點班項目到預設狀態
+            const defaultLevels = ["A", "B", "C", "D"];
+            levels = new Set(defaultLevels);
+            localStorage.setItem('levelList', JSON.stringify(Array.from(levels)));
+            
+            // 8. 重置消防編組到預設狀態
+            const defaultFireTeams = [
+                "通報班",
+                "滅火班",
+                "救護班",
+                "避難引導班",
+                "安全防護班"
+            ];
+            fireTeams = new Set(defaultFireTeams);
+            localStorage.setItem('fireTeamList', JSON.stringify(Array.from(fireTeams)));
+            
+            // 9. 重新初始化頁面
+            loadNurses();
+            initializeBedConfig();
+            loadLevels();
+            loadFireTeams();
+            
+            // 10. 延遲顯示成功通知，確保視窗已完全關閉
+            setTimeout(() => {
+                showNotification('系統已成功初始化至預設狀態');
+            }, 300);
+        }
+
+        // 點班項目管理
+        let levels = new Set();
+        
+        // 初始化點班項目列表
+        function loadLevels() {
+            const savedLevels = localStorage.getItem('levelList');
+            if (savedLevels) {
+                levels = new Set(JSON.parse(savedLevels));
+            } else {
+                // 預設點班項目
+                const defaultLevels = ["A", "B", "C", "D"];
+                levels = new Set(defaultLevels);
+            }
+            updateLevelList();
+        }
+        
+        // 新增點班項目
+        function addLevel() {
+            const input = document.getElementById('levelInput');
+            const name = input.value.trim();
+            
+            if (name && !levels.has(name)) {
+                levels.add(name);
+                updateLevelList();
+                input.value = '';
+                input.focus();
+            } else if (levels.has(name)) {
+                showNotification('此點班項目已存在');
+            }
+        }
+        
+        // 刪除點班項目
+        function removeLevel(name) {
+            levels.delete(name);
+            updateLevelList();
+        }
+        
+        // 更新點班項目列表顯示
+        function updateLevelList() {
+            const levelList = document.getElementById('levelList');
+            levelList.innerHTML = '';
+            
+            Array.from(levels).forEach(name => {
+                const levelTag = document.createElement('div');
+                levelTag.className = 'level-tag';
+                levelTag.innerHTML = `
+                    <span>${name}</span>
+                    <button onclick="removeLevel('${name}')">&times;</button>
+                `;
+                levelList.appendChild(levelTag);
+            });
+        }
+        
+        // 保存點班項目列表到 localStorage
+        function saveLevels() {
+            localStorage.setItem('levelList', JSON.stringify(Array.from(levels)));
+            showNotification('點班項目已保存！');
+        }
+
+        // 消防編組管理
+        let fireTeams = new Set();
+        
+        // 初始化消防編組列表
+        function loadFireTeams() {
+            const savedFireTeams = localStorage.getItem('fireTeamList');
+            if (savedFireTeams) {
+                fireTeams = new Set(JSON.parse(savedFireTeams));
+            } else {
+                // 預設消防編組
+                const defaultFireTeams = [
+                    "通報班",
+                    "滅火班",
+                    "救護班",
+                    "避難引導班",
+                    "安全防護班"
+                ];
+                fireTeams = new Set(defaultFireTeams);
+            }
+            updateFireTeamList();
+        }
+        
+        // 新增消防編組
+        function addFireTeam() {
+            const input = document.getElementById('fireTeamInput');
+            const name = input.value.trim();
+            
+            if (name && !fireTeams.has(name)) {
+                fireTeams.add(name);
+                updateFireTeamList();
+                input.value = '';
+                input.focus();
+            } else if (fireTeams.has(name)) {
+                showNotification('此消防編組已存在');
+            }
+        }
+        
+        // 刪除消防編組
+        function removeFireTeam(name) {
+            fireTeams.delete(name);
+            updateFireTeamList();
+        }
+        
+        // 更新消防編組列表顯示
+        function updateFireTeamList() {
+            const fireTeamList = document.getElementById('fireTeamList');
+            fireTeamList.innerHTML = '';
+            
+            Array.from(fireTeams).forEach(name => {
+                const fireTeamTag = document.createElement('div');
+                fireTeamTag.className = 'fire-team-tag';
+                fireTeamTag.innerHTML = `
+                    <span>${name}</span>
+                    <button onclick="removeFireTeam('${name}')">&times;</button>
+                `;
+                fireTeamList.appendChild(fireTeamTag);
+            });
+        }
+        
+        // 保存消防編組列表到 localStorage
+        function saveFireTeams() {
+            localStorage.setItem('fireTeamList', JSON.stringify(Array.from(fireTeams)));
+            showNotification('消防編組已保存！');
         }
     </script>
 </body>

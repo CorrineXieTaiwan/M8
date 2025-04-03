@@ -1,3 +1,129 @@
-<button id="addEquipmentBtn" class="btn btn-primary">
-  <i class="fas fa-plus"></i> 新增单位设备
-</button> 
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M8 護理排班系統 - 設備清單</title>
+    <!-- 添加 Noto Sans TC 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        * {
+            font-family: 'Noto Sans TC', "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+        }
+        button,
+        select,
+        input,
+        option {
+            font-family: 'Noto Sans TC', "Microsoft JhengHei UI", "微軟正黑體", sans-serif;
+        }
+        /* 標題容器樣式 */
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            position: relative;
+            width: 100%;
+            min-width: 1000px;
+            padding: 0 20px;
+        }
+        .title-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+        .title-right {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-shrink: 0;
+        }
+        .head-nurse {
+            font-size: 1.5rem;
+            color: #2196f3;
+            font-weight: 500;
+            white-space: nowrap;
+            border-left: 2px solid #90caf9;
+            padding-left: 20px;
+        }
+        /* 添加医院标志样式 */
+        .hospital-logo {
+            height: 50px;
+            width: auto;
+            object-fit: contain;
+        }
+        /* 修改日期时间显示样式 */
+        .datetime-display {
+            text-align: right;
+            color: #333;
+            min-width: 220px;
+            white-space: nowrap;
+        }
+        .datetime-line {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 30px;
+        }
+        #currentDate {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        #currentTime {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title-container">
+            <div class="title-left">
+                <h1>M8 設備清單</h1>
+                <span class="head-nurse">病房護理長：鐘黛瑩</span>
+            </div>
+            <div class="title-right">
+                <div class="datetime-display">
+                    <div class="datetime-line">
+                        <span id="currentDate"></span>
+                        <span id="currentTime"></span>
+                    </div>
+                </div>
+                <img src="images/Chung_Shan_Medical_University_seal.svg.png" alt="中山醫學大學附設醫院" class="hospital-logo">
+            </div>
+        </div>
+    </div>
+
+    <button id="addEquipmentBtn" class="btn btn-primary">
+        <i class="fas fa-plus"></i> 新增单位设备
+    </button>
+
+    <script>
+        // 更新日期和時間
+        function updateDateTime() {
+            const now = new Date();
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const dateStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}   星期${days[now.getDay()]}`;
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            document.getElementById('currentDate').textContent = dateStr;
+            document.getElementById('currentTime').textContent = timeStr;
+        }
+
+        // 初始化時更新時間，並每分鐘更新一次
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            setInterval(updateDateTime, 60000);
+        });
+    </script>
+</body>
+</html> 
